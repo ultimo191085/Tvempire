@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>TV EMPIRE 3D</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#03060D;--p1:#080D1A;--p2:#0C1220;--p3:#101828;
+  --b1:#162030;--b2:#1E2E42;--b3:#243650;
+  --gold:#FFD700;--og:#FF7A00;--red:#FF2244;--gr:#00E87A;
+  --bl:#0A84FF;--cy:#00C8FF;--pu:#BF5FFF;
+  --tx:#E0ECFF;--mu:#4A6280;--di:#8AAAC8;
+  --f:'Segoe UI',Arial,sans-serif;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--f);}
+::-webkit-scrollbar{width:3px;height:3px;}::-webkit-scrollbar-thumb{background:var(--b2);}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;}
+.screen.on{display:flex;}
+
+/* ── MENU ── */
+#s-menu{align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 35%,#091525,#03060D);}
+.ml{font-size:44px;font-weight:900;color:var(--gold);letter-spacing:6px;text-shadow:0 0 35px rgba(255,215,0,.4);}
+.ms{font-size:11px;letter-spacing:4px;color:var(--mu);margin:5px 0 36px;}
+.mb{display:block;width:200px;margin:0 auto 9px;padding:11px;border:none;border-radius:7px;
+  font-family:var(--f);font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .12s;}
+.mb.p{background:linear-gradient(135deg,#E6C000,#FF8800);color:#000;box-shadow:0 4px 0 #773300;}
+.mb.p:hover{filter:brightness(1.1);transform:translateY(-2px);}
+.mb.s{background:var(--p2);color:var(--di);border:1px solid var(--b1);}
+
+/* ── GAME ── */
+#s-game{flex-direction:column;}
+#topbar{height:40px;display:flex;align-items:center;gap:4px;padding:0 7px;
+  background:linear-gradient(180deg,#07101E,var(--bg));border-bottom:1px solid var(--b1);flex-shrink:0;z-index:50;}
+.tclk{font-family:monospace;font-size:14px;font-weight:900;color:var(--cy);
+  background:rgba(0,200,255,.07);border:1px solid rgba(0,200,255,.18);padding:2px 8px;border-radius:5px;}
+.spd-g{display:flex;gap:2px;}
+.spd{background:var(--p2);border:1px solid var(--b1);color:var(--mu);padding:2px 6px;
+  border-radius:4px;cursor:pointer;font-size:9px;font-weight:700;}
+.spd.on{background:rgba(0,200,255,.12);border-color:var(--cy);color:var(--cy);}
+.spd.gem{border-color:var(--pu);color:var(--pu);}
+.tstat{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.03);
+  border:1px solid var(--b1);padding:2px 8px;border-radius:5px;cursor:pointer;transition:all .1s;}
+.tstat:hover{border-color:var(--b3);background:rgba(255,255,255,.06);}
+.tv{font-size:12px;font-weight:700;color:var(--gold);}
+.tl{font-size:8px;color:var(--mu);letter-spacing:.5px;}
+.tsep{width:1px;height:16px;background:var(--b1);margin:0 2px;}
+.chs{margin-left:auto;display:flex;gap:2px;}
+.ch{padding:2px 8px;border-radius:4px;border:1px solid var(--b1);background:var(--p2);
+  color:var(--mu);font-size:9px;font-weight:700;cursor:pointer;transition:all .1s;}
+.ch.on{border-color:var(--gold);color:var(--gold);}
+.ch.lk{opacity:.3;cursor:default;}
+.notif-dot{width:6px;height:6px;background:var(--red);border-radius:50%;margin-left:2px;flex-shrink:0;animation:blink 1.2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ── SPLIT ── */
+#split{flex:1;display:flex;overflow:hidden;}
+#lp{width:276px;min-width:276px;display:flex;flex-direction:column;border-right:1px solid var(--b1);}
+#tv-wrap{position:relative;flex:1;overflow:hidden;min-height:0;}
+#tvC{display:block;width:100%;height:100%;}
+#oas{padding:6px;border-top:1px solid var(--b1);flex-shrink:0;}
+.oas-hd{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--mu);margin-bottom:4px;}
+.oas-row{display:flex;align-items:center;gap:6px;background:var(--p2);border:1px solid var(--b1);
+  border-radius:6px;padding:5px 7px;margin-bottom:3px;cursor:pointer;transition:all .1s;}
+.oas-row:hover{border-color:var(--b3);}
+.oas-ico{font-size:16px;flex-shrink:0;}
+.oas-info{flex:1;min-width:0;}
+.oas-nm{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.oas-sub{font-size:9px;color:var(--mu);}
+.oas-v{font-size:10px;font-weight:700;color:var(--gr);white-space:nowrap;}
+.live-dot2{width:5px;height:5px;background:var(--red);border-radius:50%;animation:blink 1s infinite;flex-shrink:0;}
+#lvbar{padding:4px 6px;border-top:1px solid var(--b1);flex-shrink:0;}
+.lbhd{display:flex;justify-content:space-between;font-size:9px;color:var(--mu);margin-bottom:2px;}
+.lb-fill{height:3px;background:#0A1220;border-radius:2px;overflow:hidden;}
+.lb-f{height:100%;background:linear-gradient(90deg,var(--gold),var(--og));transition:width .5s;}
+.oab{position:absolute;top:6px;right:6px;background:#CC0011;color:#fff;font-size:9px;
+  font-weight:900;padding:2px 6px;border-radius:3px;letter-spacing:2px;animation:blink 1.2s infinite;display:none;}
+.ticker-bar{position:absolute;bottom:0;left:0;right:0;height:14px;background:rgba(180,0,20,.9);overflow:hidden;}
+.ticker-in{font-size:9px;font-weight:700;color:#fff;white-space:nowrap;
+  display:inline-block;animation:tick 18s linear infinite;padding-left:100%;}
+@keyframes tick{to{transform:translateX(-100%)}}
+
+/* ── RIGHT ── */
+#rp{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#tabs{display:flex;background:#060B16;border-bottom:1px solid var(--b1);flex-shrink:0;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:5px 1px;cursor:pointer;font-size:8px;font-weight:700;letter-spacing:.5px;
+  color:var(--mu);border-bottom:2px solid transparent;gap:1px;}
+.tab .ti{font-size:13px;}
+.tab:hover{color:var(--di);}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-notif{position:relative;}
+.tab-notif::after{content:'';position:absolute;top:3px;right:calc(50% - 9px);width:5px;height:5px;background:var(--red);border-radius:50%;}
+#ta{flex:1;overflow:hidden;position:relative;}
+.tp{position:absolute;inset:0;display:none;overflow-y:auto;padding:8px 9px;}
+.tp.on{display:block;}
+
+/* ── COMMON ── */
+.card{background:var(--p1);border:1px solid var(--b1);border-radius:9px;padding:10px;margin-bottom:8px;}
+.chd{font-size:12px;font-weight:700;letter-spacing:1.2px;color:var(--gold);margin-bottom:8px;
+  display:flex;align-items:center;justify-content:space-between;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.stile{background:var(--p2);border:1px solid var(--b1);border-radius:7px;padding:8px;text-align:center;}
+.stv{font-size:16px;font-weight:900;color:var(--gold);}
+.stl{font-size:8px;color:var(--mu);letter-spacing:.7px;margin-top:2px;}
+.btn{border:none;border-radius:6px;cursor:pointer;font-family:var(--f);font-weight:700;
+  letter-spacing:.6px;transition:all .1s;display:inline-flex;align-items:center;gap:4px;justify-content:center;padding:6px 12px;font-size:10px;}
+.btn:hover{filter:brightness(1.15);transform:translateY(-1px);}
+.btn:active{transform:translateY(1px);}
+.bg{background:linear-gradient(135deg,#E6C000,#FF8800);color:#000;}
+.bb{background:linear-gradient(135deg,#0055CC,#003A99);color:#fff;}
+.br{background:linear-gradient(135deg,#CC1100,#880000);color:#fff;}
+.bpu{background:linear-gradient(135deg,#7700CC,#550099);color:#fff;}
+.bgr{background:var(--p2);color:var(--di);border:1px solid var(--b1);}
+.bgr:hover{color:var(--tx);}
+.sm{padding:3px 8px;font-size:9px;}
+.bw{width:100%;}
+.pill{padding:2px 6px;border-radius:8px;font-size:8px;font-weight:700;letter-spacing:.3px;}
+.pg{background:rgba(0,232,122,.1);border:1px solid var(--gr);color:var(--gr);}
+.pr{background:rgba(255,34,68,.1);border:1px solid var(--red);color:var(--red);}
+.pgo{background:rgba(255,215,0,.08);border:1px solid var(--gold);color:var(--gold);}
+.pb{background:rgba(10,132,255,.1);border:1px solid var(--bl);color:var(--bl);}
+.ppu{background:rgba(191,95,255,.1);border:1px solid var(--pu);color:var(--pu);}
+.pbar{height:4px;background:#0A1220;border-radius:2px;overflow:hidden;}
+.pf{height:100%;border-radius:2px;transition:width .4s;}
+.pfg{background:linear-gradient(90deg,var(--gold),var(--og));}
+.pfb{background:linear-gradient(90deg,var(--bl),var(--cy));}
+.pfgr{background:linear-gradient(90deg,var(--gr),#00A855);}
+.pfr{background:var(--red);}
+.stars{color:var(--gold);font-size:11px;letter-spacing:1px;}
+.stars.sm-stars{font-size:9px;}
+.dv{height:1px;background:var(--b1);margin:6px 0;}
+.slbl{font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--mu);margin:7px 0 4px;}
+.fin-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--b1);font-size:10px;}
+.fin-row:last-child{border:none;}
+.fl{color:var(--di)}.fv{font-weight:700}
+
+/* ── PALINSESTO EXCEL ── */
+#pal-timeline-wrap{overflow-x:auto;overflow-y:visible;border:1px solid var(--b1);border-radius:8px;}
+.pal-header{display:flex;background:var(--p2);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:10;}
+.pal-ch-label{width:72px;min-width:72px;font-size:9px;font-weight:700;color:var(--mu);padding:5px 6px;border-right:1px solid var(--b1);flex-shrink:0;}
+.pal-time-header{flex:1;position:relative;height:22px;min-width:1440px;}
+.pal-hour-mark{position:absolute;top:0;height:100%;border-left:1px solid var(--b2);
+  font-size:8px;color:var(--mu);padding-left:2px;line-height:22px;}
+.pal-row{display:flex;border-bottom:1px solid var(--b1);min-height:48px;}
+.pal-row:last-child{border-bottom:none;}
+.pal-row-label{width:72px;min-width:72px;font-size:9px;font-weight:700;padding:5px 6px;
+  border-right:1px solid var(--b1);display:flex;flex-direction:column;justify-content:center;flex-shrink:0;}
+.pal-row-label.lk{color:var(--mu);}
+.pal-track{flex:1;position:relative;min-width:1440px;height:48px;background:var(--p2);}
+.pal-prog-block{position:absolute;top:3px;bottom:3px;border-radius:5px;cursor:pointer;
+  display:flex;align-items:center;padding:0 5px;overflow:hidden;transition:filter .1s;border:1px solid rgba(255,255,255,.1);}
+.pal-prog-block:hover{filter:brightness(1.2);}
+.ppb-ico{font-size:13px;flex-shrink:0;}
+.ppb-info{margin-left:4px;overflow:hidden;}
+.ppb-name{font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;}
+.ppb-dur{font-size:8px;color:rgba(255,255,255,.6);}
+.pal-ad-block{position:absolute;top:3px;bottom:3px;background:rgba(255,122,0,.25);
+  border:1px solid rgba(255,122,0,.5);border-radius:4px;display:flex;align-items:center;
+  justify-content:center;font-size:8px;color:var(--og);cursor:pointer;}
+.pal-live-now{position:absolute;top:0;bottom:0;width:2px;background:var(--red);z-index:5;pointer-events:none;}
+.add-to-pal{display:flex;align-items:center;justify-content:center;gap:5px;
+  background:var(--p2);border:1px dashed var(--b2);border-radius:7px;padding:9px;
+  cursor:pointer;font-size:10px;color:var(--mu);margin-top:6px;transition:all .1s;}
+.add-to-pal:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── FILM ── */
+.film-item{display:flex;align-items:center;gap:7px;background:var(--p2);border:1px solid var(--b1);
+  border-radius:7px;padding:7px;margin-bottom:5px;}
+.film-poster{width:30px;height:42px;border-radius:4px;background:var(--p3);display:flex;
+  align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+
+/* ── STAFF ── */
+.staff-card{background:var(--p2);border:1px solid var(--b1);border-radius:8px;padding:8px;margin-bottom:6px;}
+.sc-top{display:flex;align-items:flex-start;gap:8px;}
+.sc-face{width:50px;height:50px;border-radius:7px;flex-shrink:0;overflow:hidden;border:1px solid var(--b2);}
+.sc-btns{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
+.hire-candidate{display:flex;align-items:center;gap:8px;background:var(--p2);border:1px solid var(--b1);
+  border-radius:7px;padding:8px;margin-bottom:5px;}
+.hc-face{width:44px;height:44px;border-radius:6px;flex-shrink:0;overflow:hidden;border:1px solid var(--b2);}
+
+/* ── POSIZIONI ── */
+.pos-row{display:flex;align-items:center;gap:8px;background:var(--p2);border:1px solid var(--b1);
+  border-radius:7px;padding:8px;margin-bottom:5px;}
+.pos-ico{font-size:20px;flex-shrink:0;width:30px;text-align:center;}
+
+/* ── PUB CONTRATTI ── */
+.contract-card{background:var(--p2);border:1px solid var(--b1);border-radius:8px;padding:9px;margin-bottom:6px;}
+
+/* ── CASSE ── */
+.casse-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px;}
+.cassa{background:var(--p2);border:2px solid var(--b1);border-radius:10px;padding:11px 7px;
+  text-align:center;cursor:pointer;transition:all .14s;position:relative;}
+.cassa:hover:not(.lk){transform:scale(1.04);}
+.cassa .c-ico{font-size:28px;margin-bottom:3px;}
+.cassa .c-nm{font-size:9px;font-weight:700;letter-spacing:.7px;}
+.cassa .c-pr{font-size:8px;margin-top:2px;}
+.cassa.lk{opacity:.35;cursor:default;}
+.c-timer{background:var(--red);color:#fff;font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px;position:absolute;top:3px;right:3px;}
+.diamond-shop{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.dpack{background:var(--p2);border:1px solid var(--b2);border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:all .1s;}
+.dpack:hover{border-color:var(--pu);}
+.dpack .dp-amt{font-size:20px;font-weight:900;color:var(--pu);}
+.dpack .dp-price{font-size:10px;color:var(--mu);margin-top:2px;}
+
+/* ── MESSAGGI ── */
+.msg-item{background:var(--p2);border:1px solid var(--b1);border-radius:7px;padding:9px;margin-bottom:5px;cursor:pointer;transition:all .1s;}
+.msg-item:hover{border-color:var(--b3);}
+.msg-item.unread{border-left:3px solid var(--gold);}
+.msg-from{font-size:10px;font-weight:700;}
+.msg-subj{font-size:11px;font-weight:700;margin-top:2px;}
+.msg-preview{font-size:10px;color:var(--mu);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.msg-date{font-size:9px;color:var(--mu);float:right;}
+
+/* ── POPUP ── */
+#pop{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;}
+#pop.on{display:flex;}
+#pop-bg{position:absolute;inset:0;background:rgba(0,0,0,.9);}
+#pop-box{position:relative;z-index:1;background:var(--p1);border:2px solid var(--b3);
+  border-radius:12px;padding:18px;max-width:380px;width:94%;max-height:88vh;overflow-y:auto;}
+.p-ico{font-size:36px;text-align:center;margin-bottom:5px;}
+.p-title{font-size:16px;font-weight:900;color:var(--gold);text-align:center;letter-spacing:1.5px;margin-bottom:6px;}
+.p-body{font-size:11px;color:var(--di);line-height:1.8;margin-bottom:11px;}
+.p-btns{display:flex;flex-direction:column;gap:5px;}
+.p-ch{width:100%;padding:8px 10px;background:var(--p2);border:1px solid var(--b1);border-radius:6px;
+  color:var(--tx);font-family:var(--f);font-size:10px;font-weight:700;cursor:pointer;
+  text-align:left;display:flex;justify-content:space-between;align-items:center;}
+.p-ch:hover{border-color:var(--gold);}
+
+/* ── REWARD ── */
+#rew{position:fixed;inset:0;z-index:1100;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.92);}
+#rew.on{display:flex;}
+.rbox{text-align:center;animation:rpop .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes rpop{from{transform:scale(.3) rotate(-12deg);opacity:0}to{transform:scale(1);opacity:1}}
+.rico{font-size:64px;display:block;margin-bottom:5px;}
+.rtitle{font-size:26px;font-weight:900;color:var(--gold);letter-spacing:3px;text-shadow:0 0 20px var(--gold);}
+.ritems{display:flex;gap:7px;justify-content:center;margin:11px 0;flex-wrap:wrap;}
+.ri{background:var(--p2);border:1px solid var(--gold);border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--gold);}
+
+/* ── VIRAL ── */
+#viral{position:fixed;inset:0;z-index:1200;display:none;pointer-events:none;}
+#viral.on{display:block;}
+.vbg{position:absolute;inset:0;background:radial-gradient(ellipse,rgba(255,215,0,.18),transparent);animation:vbga 2.6s ease forwards;}
+@keyframes vbga{0%,100%{opacity:0}20%,80%{opacity:1}}
+.vtxt{position:absolute;top:32%;left:50%;transform:translate(-50%,-50%);font-size:38px;font-weight:900;
+  color:var(--gold);letter-spacing:5px;white-space:nowrap;text-shadow:0 0 25px var(--gold);
+  animation:vta 2.6s ease forwards;}
+@keyframes vta{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}85%{opacity:1}100%{opacity:0}}
+
+/* ── SAVE INDICATOR ── */
+#save-ind{position:fixed;bottom:8px;right:8px;background:rgba(0,232,122,.15);border:1px solid var(--gr);
+  color:var(--gr);font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;z-index:500;
+  display:none;letter-spacing:1px;}
+</style>
+</head>
+<body>
+
+<!-- MENU -->
+<div id="s-menu" class="screen on">
+  <div style="font-size:52px;margin-bottom:8px;">📺</div>
+  <div class="ml">TV EMPIRE 3D</div>
+  <div class="ms">GESTISCI · TRASMETTI · DOMINA</div>
+  <button class="mb p" onclick="startGame()">▶ GIOCA</button>
+  <button class="mb s" onclick="openInfo()">ℹ️ INFO</button>
+  <div style="font-size:9px;color:var(--mu);margin-top:14px;letter-spacing:1px;">v5.0 — Salvataggio automatico attivo</div>
+</div>
+
+<!-- GAME -->
+<div id="s-game" class="screen">
+  <div id="topbar">
+    <button onclick="goMenu()" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:15px;padding:0 3px;">⌂</button>
+    <div class="tclk" id="tclk">08:00</div>
+    <div class="spd-g">
+      <div class="spd on" id="sp1" onclick="setSpd(1)">1x</div>
+      <div class="spd" id="sp2" onclick="setSpd(2)">2x</div>
+      <div class="spd gem" id="sp5" onclick="setSpd(5)">5x💎</div>
+    </div>
+    <div class="tsep"></div>
+    <div class="tstat" onclick="showDetail('money')"><span style="font-size:10px;">💰</span><div><div class="tv" id="tb-m">€500</div><div class="tl">BUDGET</div></div></div>
+    <div class="tstat" onclick="showDetail('audience')"><span style="font-size:10px;">👁</span><div><div class="tv" id="tb-a">0</div><div class="tl">AUDIENCE</div></div></div>
+    <div class="tstat" onclick="showDetail('rating')"><span style="font-size:10px;">📈</span><div><div class="tv" id="tb-r">0%</div><div class="tl">RATING</div></div></div>
+    <div class="tstat"><span style="font-size:10px;">💎</span><div><div class="tv" id="tb-g">10</div><div class="tl">GEMME</div></div></div>
+    <div class="tstat"><span style="font-size:10px;">📅</span><div><div class="tv" id="tb-day">G1</div><div class="tl">GIORNO</div></div></div>
+    <div class="chs" id="chs"></div>
+    <div id="msg-dot" class="notif-dot" style="display:none;"></div>
+  </div>
+
+  <div id="split">
+    <!-- LEFT PANEL -->
+    <div id="lp">
+      <div id="tv-wrap">
+        <canvas id="tvC"></canvas>
+        <div class="oab" id="oab">● LIVE</div>
+        <div class="ticker-bar"><span class="ticker-in" id="ticker">📺 TV EMPIRE LIVE</span></div>
+      </div>
+      <div id="oas">
+        <div class="oas-hd">▶ IN ONDA ORA</div>
+        <div id="oas-list"></div>
+      </div>
+      <div id="lvbar">
+        <div class="lbhd"><span>🎯 LV<span id="lv-n">1</span> — <span id="lv-name" style="color:var(--di)">Primo Passo</span></span><span id="lv-pct" style="color:var(--gold)">0%</span></div>
+        <div class="lb-fill"><div class="lb-f" id="lv-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="rp">
+      <div id="tabs">
+        <div class="tab on" onclick="showTab('studio',this)"><span class="ti">📊</span>STUDIO</div>
+        <div class="tab" onclick="showTab('pal',this)"><span class="ti">📅</span>PALINSESTO</div>
+        <div class="tab" onclick="showTab('film',this)"><span class="ti">🎬</span>FILM</div>
+        <div class="tab" onclick="showTab('pub',this)"><span class="ti">📢</span>PUBBLICITÀ</div>
+        <div class="tab" onclick="showTab('staff',this)"><span class="ti">👥</span>STAFF</div>
+        <div class="tab" onclick="showTab('pos',this)"><span class="ti">🗂</span>POSTAZ.</div>
+        <div class="tab" onclick="showTab('upgrade',this)"><span class="ti">🔧</span>STUDIO</div>
+        <div class="tab" onclick="showTab('casse',this)"><span class="ti">🎁</span>CASSE</div>
+        <div class="tab" onclick="showTab('livello',this)"><span class="ti">🎯</span>LIVELLO</div>
+        <div class="tab tab-notif" id="tab-msg" onclick="showTab('msg',this)"><span class="ti">📬</span>MSG</div>
+      </div>
+      <div id="ta">
+
+        <!-- STUDIO -->
+        <div class="tp on" id="tp-studio">
+          <div class="g3" style="margin-bottom:7px;">
+            <div class="stile"><div class="stv" id="st-aud">0</div><div class="stl">AUDIENCE TOTALE</div></div>
+            <div class="stile"><div class="stv" id="st-earn">€0/h</div><div class="stl">GUADAGNO/ORA</div></div>
+            <div class="stile"><div class="stv" id="st-rating">0%</div><div class="stl">RATING</div></div>
+          </div>
+          <div class="g2" style="margin-bottom:7px;">
+            <div class="stile"><div class="stv" id="st-trend">–</div><div class="stl">TREND</div></div>
+            <div class="stile"><div class="stv" id="st-sal">€0</div><div class="stl">STIPENDI/GG</div></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <button class="btn bg bw" id="btn-live" onclick="toggleLive()">🔴 AVVIA DIRETTA</button>
+            <button class="btn bgr" onclick="collectDaily()">☀️ BONUS</button>
+          </div>
+          <div class="card">
+            <div class="chd">📺 CANALI IN ONDA</div>
+            <div id="ch-status"></div>
+          </div>
+          <div class="card">
+            <div class="chd">🎯 OBIETTIVI LV <span id="obj-lv-n">1</span></div>
+            <div id="studio-objs"></div>
+            <button class="btn bg bw" style="margin-top:7px;" onclick="tryAdvance()">▶ AVANZA LIVELLO</button>
+          </div>
+        </div>
+
+        <!-- PALINSESTO -->
+        <div class="tp" id="tp-pal">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+            <div style="font-size:12px;font-weight:700;color:var(--gold);">📅 PALINSESTO 24H</div>
+            <div style="display:flex;gap:5px;">
+              <span class="pill pgo" id="pal-tot">0 spett.</span>
+              <button class="btn bg sm" onclick="openAddProg()">+ Aggiungi</button>
+            </div>
+          </div>
+          <div id="pal-timeline-wrap">
+            <div class="pal-header">
+              <div class="pal-ch-label">CANALE</div>
+              <div class="pal-time-header" id="pal-time-hd"></div>
+            </div>
+            <div id="pal-rows"></div>
+          </div>
+        </div>
+
+        <!-- FILM -->
+        <div class="tp" id="tp-film">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+            <div style="font-size:12px;font-weight:700;color:var(--gold);">🎬 FILM DISPONIBILI OGGI</div>
+            <span class="pill pb" id="film-cnt">0/20</span>
+          </div>
+          <div style="font-size:9px;color:var(--mu);margin-bottom:7px;" id="film-refresh-info">Si aggiornano ogni 24 ore</div>
+          <div id="film-list"></div>
+        </div>
+
+        <!-- PUBBLICITÀ -->
+        <div class="tp" id="tp-pub">
+          <div class="card" style="margin-bottom:7px;">
+            <div class="chd">📊 RICAVI PUBBLICITARI</div>
+            <div class="fin-row"><span class="fl">Audience totale</span><span class="fv" style="color:var(--gold)" id="pub-a">0</span></div>
+            <div class="fin-row"><span class="fl">Contratti attivi</span><span class="fv" style="color:var(--gr)" id="pub-cnt">0</span></div>
+            <div class="fin-row"><span class="fl">Guadagno orario</span><span class="fv" style="color:var(--gr)" id="pub-earn">€0/h</span></div>
+          </div>
+          <div class="slbl">CONTRATTI DISPONIBILI</div>
+          <div id="pub-list"></div>
+          <div class="slbl">CONTRATTI ATTIVI</div>
+          <div id="active-contracts"></div>
+        </div>
+
+        <!-- STAFF -->
+        <div class="tp" id="tp-staff">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+            <div style="font-size:12px;font-weight:700;color:var(--gold);">👥 TEAM (<span id="staff-cnt">0</span>)</div>
+            <button class="btn bg sm" onclick="openHireMenu()">➕ ASSUMI</button>
+          </div>
+          <div id="staff-list"></div>
+        </div>
+
+        <!-- POSTAZIONI -->
+        <div class="tp" id="tp-pos">
+          <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:7px;">🗂 POSTAZIONI STUDIO</div>
+          <div id="pos-list"></div>
+        </div>
+
+        <!-- UPGRADE -->
+        <div class="tp" id="tp-upgrade">
+          <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:7px;">🔧 UPGRADE STUDIO</div>
+          <div id="upgrade-list"></div>
+        </div>
+
+        <!-- CASSE -->
+        <div class="tp" id="tp-casse">
+          <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:7px;">🎁 CASSE PREMIO</div>
+          <div class="casse-grid" id="casse-el"></div>
+          <div class="slbl">💎 ACQUISTA GEMME</div>
+          <div class="diamond-shop" id="diamond-shop"></div>
+          <div class="card" style="margin-top:7px;">
+            <div class="chd">📜 PREMI RECENTI</div>
+            <div id="casse-log" style="font-size:9px;color:var(--mu);line-height:2.2;"></div>
+          </div>
+        </div>
+
+        <!-- LIVELLO -->
+        <div class="tp" id="tp-livello">
+          <div class="card" style="text-align:center;margin-bottom:7px;">
+            <div style="font-size:8px;letter-spacing:2px;color:var(--mu);">LIVELLO</div>
+            <div style="font-size:36px;font-weight:900;color:var(--gold);" id="big-lv">1</div>
+            <div style="font-size:12px;color:var(--tx);" id="big-lv-name">Primo Passo</div>
+            <div class="pbar" style="margin:7px 0;"><div class="pf pfg" id="lv-xp-bar" style="width:0%"></div></div>
+            <div style="font-size:9px;color:var(--mu);">XP <span id="lv-xp">0</span>/<span id="lv-xpmax">200</span></div>
+          </div>
+          <div class="card">
+            <div class="chd">🎯 OBIETTIVI</div>
+            <div id="lv-objs"></div>
+            <div class="slbl">🎁 REWARD</div>
+            <div id="lv-rew" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;"></div>
+            <button class="btn bg bw" onclick="tryAdvance()">▶ COMPLETA LIVELLO</button>
+          </div>
+        </div>
+
+        <!-- MESSAGGI -->
+        <div class="tp" id="tp-msg">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+            <div style="font-size:12px;font-weight:700;color:var(--gold);">📬 CENTRO MESSAGGI</div>
+            <span class="pill pr" id="unread-cnt" style="display:none"></span>
+          </div>
+          <div id="msg-list"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="pop"><div id="pop-bg" onclick="closePop()"></div><div id="pop-box">
+  <div class="p-ico" id="p-ico"></div>
+  <div class="p-title" id="p-title"></div>
+  <div class="p-body" id="p-body"></div>
+  <div class="p-btns" id="p-btns"></div>
+</div></div>
+
+<div id="rew" onclick="document.getElementById('rew').classList.remove('on')">
+  <div class="rbox">
+    <span class="rico" id="rico">🎁</span>
+    <div class="rtitle" id="rtitle">PREMIO!</div>
+    <div class="ritems" id="ritems"></div>
+    <div style="color:var(--mu);font-size:10px;margin-top:6px;">Tocca per continuare</div>
+  </div>
+</div>
+<div id="viral"><div class="vbg"></div><div class="vtxt" id="vtxt">VIRALE!</div></div>
+<div id="save-ind">💾 SALVATO</div>
+
+<script>
+// ════════════════════════════════════════════════
+// SAFE NUMBERS - prevents NaN
+// ════════════════════════════════════════════════
+function safe(n, d=0){ const v=+n; return (isNaN(v)||!isFinite(v))?d:v; }
+function safeAdd(...args){ return args.reduce((a,b)=>safe(a)+safe(b),0); }
+
+// ════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════
+// Programs (type for staff compatibility)
+const PROGRAMS=[
+  {id:'tg',     name:'TG Mattina', ico:'📰',rating:62,dur:60, cost:0,   lv:1, type:'news',    bonus:{m:30,e:10}},
+  {id:'meteo',  name:'Meteo',      ico:'🌤',rating:38,dur:30, cost:0,   lv:1, type:'info',    bonus:{m:20}},
+  {id:'talk',   name:'Talk Show',  ico:'🎙',rating:74,dur:90, cost:500, lv:1, type:'show',    bonus:{pm:22,e:18}},
+  {id:'sport',  name:'Sport Live', ico:'⚽',rating:84,dur:120,cost:800, lv:3, type:'sport',   bonus:{e:35,n:20}},
+  {id:'cooking',name:'Cucina',     ico:'🍳',rating:58,dur:60, cost:300, lv:3, type:'show',    bonus:{n:28,pm:18}},
+  {id:'quiz',   name:'Quiz Show',  ico:'❓',rating:70,dur:90, cost:600, lv:5, type:'show',    bonus:{pm:26,e:22}},
+  {id:'news24', name:'News 24H',   ico:'📡',rating:54,dur:60, cost:200, lv:4, type:'news',    bonus:{m:15,e:12}},
+  {id:'comedy', name:'Commedia',   ico:'😂',rating:72,dur:120,cost:700, lv:6, type:'show',    bonus:{pm:22,e:26}},
+  {id:'docu',   name:'Documentario',ico:'🌍',rating:64,dur:90,cost:500, lv:7, type:'culture', bonus:{n:20,pm:15}},
+  {id:'music',  name:'Musica Live', ico:'🎵',rating:76,dur:120,cost:900,lv:8, type:'show',    bonus:{e:28,n:22}},
+  {id:'tgsera', name:'TG Sera',    ico:'📺',rating:78,dur:60, cost:600, lv:9, type:'news',    bonus:{e:42,n:18}},
+  {id:'reality',name:'Reality',    ico:'🎭',rating:92,dur:180,cost:3000,lv:10,type:'show',    bonus:{e:48,n:38}},
+  {id:'serie',  name:'Serie TV',   ico:'🎬',rating:86,dur:60, cost:2000,lv:14,type:'fiction', bonus:{e:36,n:32}},
+  {id:'gala',   name:'Gala Evento',ico:'🌟',rating:95,dur:180,cost:8000,lv:18,type:'event',   bonus:{e:56,n:52}},
+];
+
+// Films pool (rotates daily)
+const ALL_FILMS=[
+  {id:'f1', title:'Odissea Spaziale',  ico:'🚀',r:88,dur:120,cost:800, g:'Sci-Fi'},
+  {id:'f2', title:'Il Padrino',        ico:'🎩',r:95,dur:180,cost:2000,g:'Drama'},
+  {id:'f3', title:'Jurassic World',    ico:'🦕',r:78,dur:120,cost:600, g:'Azione'},
+  {id:'f4', title:'La La Land',        ico:'🎵',r:82,dur:120,cost:700, g:'Musical'},
+  {id:'f5', title:'Avengers',          ico:'⚡',r:85,dur:180,cost:1200,g:'Super'},
+  {id:'f6', title:'Interstellar',      ico:'🌌',r:91,dur:180,cost:1500,g:'Sci-Fi'},
+  {id:'f7', title:'Titanic',           ico:'🚢',r:87,dur:180,cost:1000,g:'Drama'},
+  {id:'f8', title:'Matrix',            ico:'💊',r:90,dur:120,cost:1100,g:'Sci-Fi'},
+  {id:'f9', title:'Toy Story',         ico:'🎠',r:84,dur:90, cost:500, g:'Animaz.'},
+  {id:'f10',title:'Inception',         ico:'🌀',r:89,dur:120,cost:1300,g:'Thriller'},
+  {id:'f11',title:'Star Wars IV',      ico:'⭐',r:93,dur:120,cost:1800,g:'Sci-Fi'},
+  {id:'f12',title:'Pulp Fiction',      ico:'💈',r:92,dur:120,cost:1600,g:'Thriller'},
+  {id:'f13',title:'Forrest Gump',      ico:'🏃',r:88,dur:120,cost:900, g:'Drama'},
+  {id:'f14',title:'The Dark Knight',   ico:'🦇',r:94,dur:180,cost:2000,g:'Super'},
+  {id:'f15',title:'Parasite',          ico:'🏠',r:92,dur:120,cost:1700,g:'Drama'},
+  {id:'f16',title:'Goodfellas',        ico:'🕴',r:90,dur:120,cost:1400,g:'Crime'},
+  {id:'f17',title:'Gladiator',         ico:'⚔️',r:85,dur:180,cost:900, g:'Azione'},
+  {id:'f18',title:'Shrek',             ico:'🟢',r:80,dur:90, cost:500, g:'Animaz.'},
+  {id:'f19',title:'Alien',             ico:'👾',r:88,dur:120,cost:1000,g:'Horror'},
+  {id:'f20',title:'2001 Odissea',      ico:'🌑',r:89,dur:180,cost:1200,g:'Sci-Fi'},
+  {id:'f21',title:'Seven',             ico:'🔍',r:86,dur:120,cost:900, g:'Thriller'},
+  {id:'f22',title:'Coco',              ico:'💀',r:87,dur:90, cost:700, g:'Animaz.'},
+  {id:'f23',title:'Mad Max',           ico:'🚗',r:85,dur:120,cost:1100,g:'Azione'},
+  {id:'f24',title:'Casablanca',        ico:'🎷',r:91,dur:120,cost:800, g:'Romance'},
+  {id:'f25',title:'Braveheart',        ico:'🏴',r:83,dur:180,cost:800, g:'Storia'},
+  {id:'f26',title:'Fight Club',        ico:'🥊',r:88,dur:120,cost:1100,g:'Thriller'},
+  {id:'f27',title:'WALL-E',            ico:'🤖',r:85,dur:90, cost:600, g:'Animaz.'},
+  {id:'f28',title:'Il Re Leone',       ico:'🦁',r:86,dur:90, cost:600, g:'Animaz.'},
+  {id:'f29',title:'Schindler\'s List', ico:'📜',r:94,dur:180,cost:2200,g:'Storia'},
+  {id:'f30',title:'Dune',              ico:'🏜',r:86,dur:150,cost:1400,g:'Sci-Fi'},
+];
+
+// Ad contracts
+const PUBS_DATA=[
+  {id:'a1', name:'AutoItalia SpA',     ico:'🚗',cat:'Auto',     mult:0.6, minAud:300,  dur:7,  cost:0,   lv:1},
+  {id:'a2', name:'FreshMarket',        ico:'🛒',cat:'Alimentari',mult:0.4,minAud:200,  dur:5,  cost:0,   lv:1},
+  {id:'a3', name:'TechPhone Italia',   ico:'📱',cat:'Telefonia', mult:1.0,minAud:1000, dur:10, cost:0,   lv:2},
+  {id:'a4', name:'HealthVita',         ico:'💊',cat:'Salute',    mult:0.8,minAud:1500, dur:7,  cost:0,   lv:3},
+  {id:'a5', name:'FashionGlam',        ico:'👗',cat:'Moda',      mult:1.2,minAud:2000, dur:14, cost:0,   lv:5},
+  {id:'a6', name:'SportMania',         ico:'⚽',cat:'Sport',     mult:1.5,minAud:3000, dur:14, cost:0,   lv:6},
+  {id:'a7', name:'TravelSole',         ico:'✈️',cat:'Viaggio',   mult:1.1,minAud:2500, dur:10, cost:0,   lv:7},
+  {id:'a8', name:'BancaFutura',        ico:'🏦',cat:'Finanza',   mult:2.2,minAud:5000, dur:30, cost:0,   lv:10},
+  {id:'a9', name:'GreenEnergy',        ico:'⚡',cat:'Energia',   mult:1.6,minAud:4000, dur:21, cost:0,   lv:12},
+  {id:'a10',name:'LuxuryPrestige',     ico:'💎',cat:'Lusso',     mult:3.5,minAud:10000,dur:30, cost:0,   lv:20},
+];
+
+// Characters pool (Italian/Hollywood inspired names, with stars)
+const CHARS_POOL=[
+  {id:'ch1', name:'Lorenzo Barone',   role:'Presentatore',ico:'🎤',stars:5,sal:1800,bonus:28,seed:1,desc:'Ex volto RAI, conduttore premio'},
+  {id:'ch2', name:'Giulia Martini',   role:'Presentatore',ico:'🎤',stars:4,sal:1100,bonus:20,seed:2,desc:'Presentatrice di punta Mediaset'},
+  {id:'ch3', name:'Alessandro Conti', role:'Presentatore',ico:'🎤',stars:3,sal:700, bonus:14,seed:3,desc:'Conduttore emergente'},
+  {id:'ch4', name:'Sofia Esposito',   role:'Presentatore',ico:'🎤',stars:5,sal:1600,bonus:25,seed:4,desc:'Icona televisiva italiana'},
+  {id:'ch5', name:'Marco Ferrari',    role:'Presentatore',ico:'🎤',stars:2,sal:450, bonus:9, seed:5,desc:'Nuovo talento'},
+  {id:'ch6', name:'Valentina Ricci',  role:'Presentatore',ico:'🎤',stars:4,sal:1000,bonus:18,seed:6,desc:'Volto noto Canale 5'},
+  {id:'ch7', name:'Roberto Sordi',    role:'Giornalista', ico:'📝',stars:5,sal:1400,bonus:24,seed:7,desc:'Giornalista RAI premiato'},
+  {id:'ch8', name:'Elena Bianchi',    role:'Giornalista', ico:'📝',stars:4,sal:900, bonus:18,seed:8,desc:'Inviata speciale'},
+  {id:'ch9', name:'Fabio Romano',     role:'Giornalista', ico:'📝',stars:3,sal:600, bonus:12,seed:9,desc:'Redattore senior'},
+  {id:'ch10',name:'Anna Verdi',       role:'Giornalista', ico:'📝',stars:2,sal:380, bonus:7, seed:10,desc:'Giornalista junior'},
+  {id:'ch11',name:'Paolo Russo',      role:'Cameraman',   ico:'🎥',stars:4,sal:700, bonus:10,seed:11,desc:'Director of Photography'},
+  {id:'ch12',name:'Chiara Serra',     role:'Cameraman',   ico:'🎥',stars:3,sal:450, bonus:7, seed:12,desc:'Cameraman esperto'},
+  {id:'ch13',name:'Luca Greco',       role:'Tecnico',     ico:'🔧',stars:3,sal:400, bonus:6, seed:13,desc:'Tecnico audiovisivo'},
+  {id:'ch14',name:'Marta Bruno',      role:'Tecnico',     ico:'🔧',stars:4,sal:550, bonus:8, seed:14,desc:'Senior tech engineer'},
+  {id:'ch15',name:'Antonio De Luca',  role:'Regista',     ico:'🎬',stars:5,sal:2000,bonus:30,seed:15,desc:'Regista premiato Cinecittà'},
+  {id:'ch16',name:'Francesca Mancini',role:'Regista',     ico:'🎬',stars:4,sal:1200,bonus:22,seed:16,desc:'Regista fiction RAI'},
+  {id:'ch17',name:'Giorgio Lombardi', role:'PR Manager',  ico:'📣',stars:4,sal:800, bonus:14,seed:17,desc:'Ex PR Mediaset'},
+  {id:'ch18',name:'Simona Costa',     role:'PR Manager',  ico:'📣',stars:3,sal:550, bonus:10,seed:18,desc:'PR Manager digital'},
+  {id:'ch19',name:'Matteo Gallo',     role:'Scenografo',  ico:'🎨',stars:4,sal:700, bonus:11,seed:19,desc:'Art Director premiato'},
+  {id:'ch20',name:'Laura Barbieri',   role:'Scenografo',  ico:'🎨',stars:3,sal:480, bonus:8, seed:20,desc:'Set designer'},
+  // VIP stars (cassa VIP)
+  {id:'vip1',name:'Massimo Trovati',  role:'Presentatore',ico:'🌟',stars:5,sal:5000,bonus:50,seed:21,desc:'STAR ⭐ Conduttore leggendario',vip:true},
+  {id:'vip2',name:'Monica Ventura',   role:'Presentatore',ico:'🌟',stars:5,sal:4500,bonus:48,seed:22,desc:'STAR ⭐ Icona della TV italiana',vip:true},
+  {id:'vip3',name:'Alberto Caruso',   role:'Giornalista', ico:'🌟',stars:5,sal:4000,bonus:45,seed:23,desc:'STAR ⭐ Giornalista celebre',vip:true},
+  {id:'vip4',name:'Isabella Romano',  role:'Presentatore',ico:'🌟',stars:5,sal:4800,bonus:52,seed:24,desc:'STAR ⭐ Volto TV internazionale',vip:true},
+];
+
+// Staff roles compatibility
+const ROLE_COMPAT={
+  'Presentatore':['news','show','sport','culture','event','fiction'],
+  'Giornalista': ['news','info'],
+  'Cameraman':   null, // all
+  'Tecnico':     null,
+  'Regista':     ['fiction','show','event'],
+  'PR Manager':  null,
+  'Scenografo':  null,
+};
+
+// Upgrades
+const UPGRADES=[
+  {id:'luci',   name:'Luci',       ico:'💡',cur:1,max:10,cost:400, mult:1.7, eff:.08, desc:'+8% audience/lv'},
+  {id:'cam',    name:'Telecamere', ico:'🎥',cur:1,max:10,cost:600, mult:1.8, eff:.10, desc:'+10% audience/lv'},
+  {id:'audio',  name:'Audio',      ico:'🎤',cur:0,max:10,cost:500, mult:1.8, eff:.07, desc:'+7% rating/lv'},
+  {id:'grafica',name:'Grafica',    ico:'🖥',cur:0,max:10,cost:700, mult:2.0, eff:.09, desc:'+9% qualità/lv'},
+  {id:'red',    name:'Redazione',  ico:'📋',cur:0,max:10,cost:350, mult:1.6, eff:.06, desc:'+6% produzione/lv'},
+];
+
+// Postazioni (studio positions)
+const POSITIONS=[
+  {id:'anchorman',  name:'Anchorman Studio A',     ico:'📺', reqRole:['Presentatore','Giornalista']},
+  {id:'anchorman2', name:'Anchorman Studio B',     ico:'📺', reqRole:['Presentatore','Giornalista']},
+  {id:'reporter',   name:'Reporter in Campo',      ico:'🎙', reqRole:['Giornalista']},
+  {id:'host',       name:'Host Talk Show',         ico:'🎤', reqRole:['Presentatore']},
+  {id:'director',   name:'Regia',                  ico:'🎬', reqRole:['Regista']},
+  {id:'camera1',    name:'Camera 1',               ico:'🎥', reqRole:['Cameraman']},
+  {id:'camera2',    name:'Camera 2',               ico:'🎥', reqRole:['Cameraman']},
+  {id:'audio',      name:'Audio Mixer',            ico:'🔊', reqRole:['Tecnico']},
+  {id:'pr',         name:'Ufficio PR',             ico:'📣', reqRole:['PR Manager']},
+];
+
+// Casse
+const CASSE=[
+  {id:'free',  name:'GIORNALIERA', ico:'📦',price:0,   gem:false,color:'#00E87A',daily:true,  desc:'Media-bassa'},
+  {id:'basic', name:'BASE',        ico:'📫',price:2,   gem:true, color:'#8AAAC8',daily:false, desc:'Media'},
+  {id:'gold',  name:'ORO',         ico:'🥇',price:5,   gem:true, color:'#FFD700',daily:false, desc:'Alta'},
+  {id:'legend',name:'LEGGENDA',    ico:'👑',price:12,  gem:true, color:'#BF5FFF',daily:false, desc:'Molto alta'},
+  {id:'vip',   name:'VIP STAR ⭐', ico:'🌟',price:30,  gem:true, color:'#FF7A00',daily:false, desc:'Garantisce star 5⭐',vip:true},
+];
+
+const DIAMOND_PACKS=[
+  {gems:30,  price:'€0.99', ico:'💎'},
+  {gems:80,  price:'€1.99', ico:'💎💎'},
+  {gems:200, price:'€4.99', ico:'💎💎💎'},
+  {gems:500, price:'€9.99', ico:'💎💎💎💎'},
+];
+
+// Levels (channel unlocks every 5 levels)
+const LEVELS=[
+  {n:'Primo Passo',    o:[{t:'500 audience',g:'aud',v:500},{t:'€2.000 guadagnati',g:'earn',v:2000},{t:'3 programmi',g:'slots',v:3}],         xp:100,rew:{m:500}},
+  {n:'In Onda',        o:[{t:'1.500 aud',g:'aud',v:1500},{t:'€6.000',g:'earn',v:6000},{t:'1 staff',g:'staff',v:1}],                          xp:150,rew:{m:800,g:1}},
+  {n:'Qualità',        o:[{t:'3.000 aud',g:'aud',v:3000},{t:'2 upgrade',g:'upg',v:2},{t:'€15.000',g:'earn',v:15000}],                        xp:200,rew:{m:1500}},
+  {n:'Espansione',     o:[{t:'5.000 aud',g:'aud',v:5000},{t:'4 programmi',g:'slots',v:4},{t:'2 staff',g:'staff',v:2}],                       xp:250,rew:{m:2000,g:2}},
+  {n:'Talk Show',      o:[{t:'Aggiungi Talk Show',g:'prog',v:'talk'},{t:'8.000 aud',g:'aud',v:8000},{t:'€30.000',g:'earn',v:30000}],          xp:320,rew:{m:3000,ch:2}},
+  {n:'Prime Time',     o:[{t:'12.000 aud',g:'aud',v:12000},{t:'2 contratti pub',g:'pub',v:2},{t:'3 staff',g:'staff',v:3}],                   xp:400,rew:{m:4000,g:2}},
+  {n:'Quiz e Sport',   o:[{t:'Aggiungi Sport',g:'prog',v:'sport'},{t:'18.000 aud',g:'aud',v:18000},{t:'€60.000',g:'earn',v:60000}],           xp:500,rew:{m:5000,g:3}},
+  {n:'Film Library',   o:[{t:'3 film acquistati',g:'films',v:3},{t:'25.000 aud',g:'aud',v:25000},{t:'4 upgrade',g:'upg',v:4}],               xp:620,rew:{m:7000,g:3}},
+  {n:'Multi Staff',    o:[{t:'5 staff',g:'staff',v:5},{t:'35.000 aud',g:'aud',v:35000},{t:'€120.000',g:'earn',v:120000}],                    xp:760,rew:{m:9000,g:4}},
+  {n:'Reality Show',   o:[{t:'Aggiungi Reality',g:'prog',v:'reality'},{t:'50.000 aud',g:'aud',v:50000},{t:'€200.000',g:'earn',v:200000}],     xp:950,rew:{m:12000,g:5,ch:3}},
+  {n:'Network',        o:[{t:'70.000 aud',g:'aud',v:70000},{t:'4 pub attivi',g:'pub',v:4},{t:'6 staff',g:'staff',v:6}],                     xp:1150,rew:{m:15000,g:6}},
+  {n:'Espansione2',    o:[{t:'100.000 aud',g:'aud',v:100000},{t:'€500.000',g:'earn',v:500000},{t:'5 film',g:'films',v:5}],                   xp:1400,rew:{m:20000,g:8}},
+  {n:'Serie TV',       o:[{t:'Aggiungi Serie TV',g:'prog',v:'serie'},{t:'150.000 aud',g:'aud',v:150000},{t:'8 staff',g:'staff',v:8}],         xp:1700,rew:{m:25000,g:8,ch:4}},
+  {n:'Dominio',        o:[{t:'200.000 aud',g:'aud',v:200000},{t:'€1.000.000',g:'earn',v:1000000},{t:'6 film',g:'films',v:6}],                xp:2100,rew:{m:35000,g:12}},
+  {n:'Imperatore TV',  o:[{t:'500.000 aud',g:'aud',v:500000},{t:'Tutti upgrade lv5',g:'upgmax',v:5},{t:'10 staff',g:'staff',v:10}],           xp:3000,rew:{m:50000,g:20,ch:5}},
+];
+
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let G={};
+function defaultState(){
+  return {
+    money:2000, earned:0, gems:10,
+    audience:0, rating:0,
+    level:1, xp:0, xpNext:200,
+    speed:1, speed5:false,
+    live:false, hour:8, minute:0, day:1,
+    ch:0,
+    channels:[
+      {name:'Canale 1',unlocked:true, schedule:[], audience:0},
+      {name:'Canale 2',unlocked:false,schedule:[], audience:0},
+      {name:'Canale 3',unlocked:false,schedule:[], audience:0},
+      {name:'Rete 4',  unlocked:false,schedule:[], audience:0},
+      {name:'Canale 5',unlocked:false,schedule:[], audience:0},
+    ],
+    staff:[], hired:new Set(),
+    ownedFilms:new Set(),
+    contracts:[], // {id, pubId, startDay, endDay, active}
+    positions:{}, // posId -> staffId
+    freeTimer:0, freeReady:true,
+    dailyDone:false,
+    trend:'–', trendMult:1,
+    openCassas:0, nameIdx:0,
+    messages:[], msgSeq:0,
+    filmRefreshDay:0, availableFilms:[],
+    totalSalary:0,
+    monthlyEarn:0, monthDay:0,
+  };
+}
+
+// ════════════════════════════════════════════════
+// SAVE / LOAD
+// ════════════════════════════════════════════════
+function saveGame(){
+  try{
+    const d={...G};
+    d.hired=[...G.hired];
+    d.ownedFilms=[...G.ownedFilms];
+    localStorage.setItem('tve5',JSON.stringify(d));
+    showSaveInd();
+  }catch(e){}
+}
+function loadGame(){
+  try{
+    const raw=localStorage.getItem('tve5');
+    if(!raw) return false;
+    const d=JSON.parse(raw);
+    G=defaultState();
+    Object.assign(G,d);
+    G.hired=new Set(d.hired||[]);
+    G.ownedFilms=new Set(d.ownedFilms||[]);
+    // sanitize numbers
+    G.money=safe(G.money,2000);
+    G.earned=safe(G.earned,0);
+    G.gems=safe(G.gems,10);
+    G.audience=safe(G.audience,0);
+    G.rating=safe(G.rating,0);
+    G.level=safe(G.level,1);
+    G.xp=safe(G.xp,0);
+    G.xpNext=safe(G.xpNext,200);
+    G.hour=safe(G.hour,8);
+    G.minute=safe(G.minute,0);
+    G.day=safe(G.day,1);
+    if(!Array.isArray(G.channels)) G.channels=defaultState().channels;
+    if(!Array.isArray(G.staff)) G.staff=[];
+    if(!Array.isArray(G.contracts)) G.contracts=[];
+    if(!G.positions) G.positions={};
+    if(!Array.isArray(G.messages)) G.messages=[];
+    G.channels.forEach(ch=>{ if(!Array.isArray(ch.schedule)) ch.schedule=[]; ch.audience=safe(ch.audience,0); });
+    return true;
+  }catch(e){ return false; }
+}
+function showSaveInd(){
+  const el=document.getElementById('save-ind');
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',1500);
+}
+window.addEventListener('beforeunload',saveGame);
+setInterval(saveGame,120000);
+
+// ════════════════════════════════════════════════
+// TV CANVAS (realistic broadcast style)
+// ════════════════════════════════════════════════
+const tvC=document.getElementById('tvC');
+const tvX=tvC.getContext('2d');
+let TVF=0,TVMouth=0,TVCam=0,TVLp=0;
+function resizeTV(){
+  const w=document.getElementById('tv-wrap');
+  tvC.width=w.offsetWidth; tvC.height=w.offsetHeight;
+}
+function getCurrentProg(){
+  const now=safe(G.hour)*60+safe(G.minute);
+  for(const ch of G.channels){
+    if(!ch.unlocked) continue;
+    for(const item of ch.schedule){
+      if(item.type!=='ad'&&safe(item.startMin)<=now&&safe(item.endMin)>now){
+        return {ch:ch.name, item};
+      }
+    }
+  }
+  return null;
+}
+function drawTV(){
+  const w=tvC.width||276, h=tvC.height||180;
+  TVF++;TVMouth+=0.07;TVCam+=0.008;TVLp+=0.045;
+  const cp=getCurrentProg();
+  const prog=cp?PROGRAMS.find(p=>p.id===cp.item.id)||ALL_FILMS.find(f=>f.id===cp.item.id):null;
+  const ptype=prog?prog.type||prog.g:'idle';
+  // Draw based on program type
+  if(ptype==='news'||ptype==='info') drawTVNews(w,h,prog);
+  else if(ptype==='show'||ptype==='event') drawTVShow(w,h,prog);
+  else if(ptype==='sport') drawTVSport(w,h,prog);
+  else if(ptype==='fiction'||ptype==='film'||cp?.item.type==='film') drawTVFilm(w,h,prog);
+  else drawTVIdle(w,h);
+  // Common overlays
+  drawTVOverlays(w,h,prog,cp);
+}
+function drawTVNews(w,h,prog){
+  // Newsroom style
+  const bg=tvX.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'#010B1F');bg.addColorStop(1,'#030D28');
+  tvX.fillStyle=bg;tvX.fillRect(0,0,w,h);
+  // Blue gradient backdrop
+  const gd=tvX.createRadialGradient(w/2,h*.4,0,w/2,h*.4,w*.6);
+  gd.addColorStop(0,'rgba(0,80,180,.3)');gd.addColorStop(1,'rgba(0,0,0,0)');
+  tvX.fillStyle=gd;tvX.fillRect(0,0,w,h);
+  // Globe/world map backdrop (stylized)
+  tvX.strokeStyle='rgba(0,120,255,.15)';tvX.lineWidth=1;
+  for(let i=0;i<5;i++){tvX.beginPath();tvX.arc(w/2,h*.35,30+i*20,0,Math.PI*2);tvX.stroke();}
+  // Desk + anchor
+  drawNewsDesk(w,h);
+  // Lower third
+  tvX.fillStyle='rgba(0,40,140,.92)';tvX.fillRect(0,h*.7,w*.85,h*.12);
+  tvX.fillStyle='rgba(220,30,30,.95)';tvX.fillRect(0,h*.82,w*.85,h*.06);
+  tvX.fillStyle='#fff';tvX.font=`bold ${Math.max(9,w*.04)}px Arial`;
+  tvX.textAlign='left';tvX.textBaseline='middle';
+  tvX.fillText('📰 '+(prog?prog.name.toUpperCase():'TG'),8,h*.76);
+  tvX.fillStyle='#FFD700';tvX.font=`${Math.max(7,w*.032)}px Arial`;
+  tvX.fillText(timeClock(),8,h*.85);
+}
+function drawTVShow(w,h,prog){
+  const bg=tvX.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'#1A0520');bg.addColorStop(1,'#0A0215');
+  tvX.fillStyle=bg;tvX.fillRect(0,0,w,h);
+  // Stage spotlights
+  [[w*.3,0],[w*.7,0]].forEach(([lx,ly])=>{
+    const sg=tvX.createLinearGradient(lx,ly,lx,h*.6);
+    sg.addColorStop(0,'rgba(255,200,50,.25)');sg.addColorStop(1,'rgba(255,200,50,0)');
+    tvX.fillStyle=sg;tvX.beginPath();tvX.moveTo(lx-30,ly);tvX.lineTo(lx+30,ly);tvX.lineTo(lx+90,h*.6);tvX.lineTo(lx-90,h*.6);tvX.fill();
+  });
+  // Stage floor
+  tvX.fillStyle='rgba(120,0,180,.3)';tvX.fillRect(0,h*.65,w,h*.35);
+  // Audience silhouettes
+  tvX.fillStyle='rgba(0,0,0,.7)';
+  for(let i=0;i<12;i++){const x=i/12*w+10,y=h*.88;tvX.beginPath();tvX.arc(x,y,6,0,Math.PI*2);tvX.fill();tvX.fillRect(x-4,y,8,8);}
+  // Host area
+  drawShowHost(w,h);
+  // Title band
+  tvX.fillStyle='rgba(180,0,200,.85)';tvX.fillRect(0,h*.72,w,h*.1);
+  tvX.fillStyle='#fff';tvX.font=`bold ${Math.max(9,w*.038)}px Arial`;tvX.textAlign='center';tvX.textBaseline='middle';
+  tvX.fillText(prog?prog.name.toUpperCase():'SHOW',w/2,h*.77);
+}
+function drawTVSport(w,h,prog){
+  // Stadium/pitch
+  tvX.fillStyle='#0A2010';tvX.fillRect(0,0,w,h);
+  // Grass
+  const gr=tvX.createLinearGradient(0,h*.4,0,h);
+  gr.addColorStop(0,'#1A5020');gr.addColorStop(1,'#0D3015');
+  tvX.fillStyle=gr;tvX.fillRect(0,h*.4,w,h*.6);
+  // Lines
+  tvX.strokeStyle='rgba(255,255,255,.4)';tvX.lineWidth=1.5;
+  tvX.strokeRect(w*.1,h*.45,w*.8,h*.5);
+  tvX.beginPath();tvX.moveTo(w/2,h*.45);tvX.lineTo(w/2,h*.95);tvX.stroke();
+  tvX.beginPath();tvX.arc(w/2,h*.7,h*.12,0,Math.PI*2);tvX.stroke();
+  // Scoreboard overlay
+  tvX.fillStyle='rgba(0,0,0,.8)';tvX.fillRect(w*.15,h*.05,w*.7,h*.22);
+  tvX.fillStyle='#FF4400';tvX.fillRect(w*.15,h*.05,w*.3,h*.22);
+  tvX.fillStyle='#0044FF';tvX.fillRect(w*.55,h*.05,w*.3,h*.22);
+  tvX.fillStyle='#fff';tvX.font=`bold ${Math.max(14,w*.09)}px Arial`;tvX.textAlign='center';tvX.textBaseline='middle';
+  tvX.fillText('2',w*.3,h*.16);tvX.fillText('1',w*.7,h*.16);
+  tvX.fillStyle='rgba(0,0,0,.9)';tvX.fillRect(w*.45,h*.07,w*.1,h*.18);
+  tvX.fillStyle='#FFD700';tvX.font=`bold ${Math.max(9,w*.04)}px Arial`;
+  tvX.fillText("45'",w/2,h*.16);
+}
+function drawTVFilm(w,h,prog){
+  // Cinematic
+  tvX.fillStyle='#000';tvX.fillRect(0,0,w,h);
+  // Film grain
+  for(let i=0;i<300;i++){
+    tvX.fillStyle=`rgba(255,255,255,${Math.random()*.06})`;
+    tvX.fillRect(Math.random()*w,Math.random()*h,1,1);
+  }
+  // Scene (generic dramatic)
+  const sc=tvX.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
+  sc.addColorStop(0,'#1A1010');sc.addColorStop(1,'#050505');
+  tvX.fillStyle=sc;tvX.fillRect(0,h*.15,w,h*.7);
+  // Letterbox bars
+  tvX.fillStyle='#000';tvX.fillRect(0,0,w,h*.12);tvX.fillRect(0,h*.88,w,h*.12);
+  // Film title
+  tvX.fillStyle='rgba(255,215,0,.7)';tvX.font=`bold ${Math.max(9,w*.038)}px Georgia,serif`;
+  tvX.textAlign='center';tvX.textBaseline='middle';
+  if(prog) tvX.fillText(prog.title||prog.name,w/2,h/2);
+}
+function drawTVIdle(w,h){
+  tvX.fillStyle='#020508';tvX.fillRect(0,0,w,h);
+  // Test card style
+  const cols=['#FF2244','#FF7A00','#FFD700','#00E87A','#0A84FF','#BF5FFF','#fff'];
+  cols.forEach((c,i)=>{tvX.fillStyle=c;tvX.fillRect(i*(w/7),h*.1,w/7,h*.75);});
+  tvX.fillStyle='rgba(0,0,0,.6)';tvX.fillRect(0,0,w,h);
+  tvX.fillStyle='rgba(255,215,0,.8)';tvX.font=`bold ${Math.max(12,w*.06)}px Arial Black,Arial`;
+  tvX.textAlign='center';tvX.textBaseline='middle';tvX.fillText('📺 TV EMPIRE',w/2,h/2);
+  tvX.fillStyle='rgba(255,255,255,.4)';tvX.font=`${Math.max(8,w*.035)}px Arial`;
+  tvX.fillText(G.live?'IN DIRETTA':'AVVIA DIRETTA PER ANDARE IN ONDA',w/2,h/2+h*.1);
+}
+function drawNewsDesk(w,h){
+  tvX.save();tvX.translate(w/2,h*.6);
+  const s=w/300;
+  tvX.fillStyle='#0E2050';tvX.fillRect(-70*s,-8*s,140*s,50*s);
+  tvX.strokeStyle='#1E3A80';tvX.lineWidth=2;tvX.strokeRect(-70*s,-8*s,140*s,50*s);
+  // anchor
+  tvX.fillStyle='#D4A882';tvX.beginPath();tvX.ellipse(0,-40*s,12*s,14*s,0,0,Math.PI*2);tvX.fill();
+  tvX.fillStyle='#0A1848';tvX.fillRect(-10*s,-30*s,20*s,25*s);
+  tvX.fillStyle='#F5F5F5';tvX.fillRect(-4*s,-28*s,8*s,18*s);
+  tvX.fillStyle='#222';tvX.fillRect(-3*s,-38*s,2.5*s,2*s);tvX.fillRect(1*s,-38*s,2.5*s,2*s);
+  tvX.strokeStyle='#333';tvX.lineWidth=1.5;
+  if(Math.sin(TVMouth)>.3&&G.live){tvX.beginPath();tvX.ellipse(0,-33*s,3*s,2*s,0,0,Math.PI);tvX.stroke();}
+  else{tvX.beginPath();tvX.moveTo(-3*s,-33*s);tvX.lineTo(3*s,-33*s);tvX.stroke();}
+  tvX.restore();
+}
+function drawShowHost(w,h){
+  tvX.save();tvX.translate(w/2,h*.68);const s=w/300;
+  tvX.fillStyle='#D4A882';tvX.beginPath();tvX.ellipse(0,-38*s,11*s,13*s,0,0,Math.PI*2);tvX.fill();
+  tvX.fillStyle='#2A0A40';tvX.fillRect(-9*s,-28*s,18*s,28*s);
+  tvX.fillStyle='#f5f5f5';tvX.fillRect(-3*s,-26*s,6*s,22*s);
+  tvX.fillStyle='#CC00FF';tvX.fillRect(8*s,-20*s,3*s,10*s); // mic
+  tvX.restore();
+}
+function drawTVOverlays(w,h,prog,cp){
+  // Bottom ticker
+  if(G.live){
+    tvX.fillStyle='rgba(180,0,20,.88)';tvX.fillRect(0,h*.86,w,14);
+    tvX.fillStyle='#fff';tvX.font=`bold 9px Arial`;tvX.textAlign='left';tvX.textBaseline='middle';
+    const ts=`📺 LIVE • 👁 ${fmtK(G.audience)} SPETT. • €${fmtK(G.money)} • GIORNO ${G.day} • ${timeClock()} `;
+    const off=(TVF*1.2)%(ts.length*5.5);
+    tvX.fillText(ts+ts,-off,h*.93);
+  }
+  // Channel badge top left
+  tvX.fillStyle='rgba(0,0,0,.7)';tvX.fillRect(0,0,80,18);
+  tvX.fillStyle='#FFD700';tvX.font='bold 8px Arial';tvX.textAlign='left';tvX.textBaseline='middle';
+  tvX.fillText(cp?cp.ch:'TV EMPIRE',4,9);
+}
+function timeClock(){return String(safe(G.hour)).padStart(2,'0')+':'+String(Math.floor(safe(G.minute))).padStart(2,'0');}
+function tvLoop(){ drawTV(); requestAnimationFrame(tvLoop); }
+
+// ════════════════════════════════════════════════
+// CALC
+// ════════════════════════════════════════════════
+function calcUpgBonus(){ return 1+UPGRADES.reduce((a,u)=>a+safe(u.eff)*safe(u.cur),0); }
+function calcStaffBonus(){ return 1+G.staff.reduce((a,s)=>a+safe(s.bonus)/100,0); }
+function calcPubMult(){
+  let m=0.5;
+  (G.contracts||[]).forEach(c=>{
+    if(!c.active) return;
+    const p=PUBS_DATA.find(p=>p.id===c.pubId);
+    if(p&&safe(G.audience)>=p.minAud) m+=safe(p.mult);
+  });
+  return safe(m,0.5);
+}
+function calcEarnPerSec(){
+  return safe(G.audience)*safe(calcPubMult())/3600;
+}
+function calcChannelAudience(chIdx){
+  const ch=G.channels[chIdx];
+  if(!ch||!ch.unlocked) return 0;
+  const now=safe(G.hour)*60+safe(G.minute);
+  let rating=0;
+  (ch.schedule||[]).forEach(item=>{
+    if(item.type==='ad') return;
+    if(safe(item.startMin)>now||safe(item.endMin)<=now) return;
+    const prog=PROGRAMS.find(p=>p.id===item.id)||ALL_FILMS.find(f=>f.id===item.id);
+    if(!prog) return;
+    let r=safe(prog.rating||prog.r,50);
+    const bn=prog.bonus||{};
+    const hh=safe(G.hour);
+    if(hh>=6&&hh<12&&bn.m) r+=safe(bn.m);
+    else if(hh>=12&&hh<14&&bn.n) r+=safe(bn.n);
+    else if(hh>=14&&hh<18&&bn.pm) r+=safe(bn.pm);
+    else if(hh>=18&&hh<22&&bn.e) r+=safe(bn.e);
+    else if(bn.nt) r+=safe(bn.nt);
+    // staff bonus
+    if(item.staffId){
+      const st=G.staff.find(s=>s.id===item.staffId);
+      if(st) r+=safe(st.bonus);
+    }
+    // upgrade bonus
+    r*=safe(calcUpgBonus(),1);
+    // trend
+    r*=safe(G.trendMult,1);
+    rating+=safe(r);
+  });
+  return Math.max(0,Math.floor(safe(rating)*(1+(Math.random()-.5)*.05)));
+}
+function recalcAudience(){
+  let total=0;
+  (G.channels||[]).forEach((ch,i)=>{
+    const a=calcChannelAudience(i);
+    ch.audience=a; total+=a;
+  });
+  G.audience=Math.max(0,safe(total));
+  G.rating=Math.min(100,Math.floor(safe(G.audience)/500));
+}
+
+// ════════════════════════════════════════════════
+// SCHEDULE UTILS
+// ════════════════════════════════════════════════
+function getCh(){ return G.channels[safe(G.ch,0)]; }
+function getProgItem(id){
+  return PROGRAMS.find(p=>p.id===id)||ALL_FILMS.find(f=>f.id===id)||(G.availableFilms||[]).find(f=>f.id===id);
+}
+function rebuildTimes(ch){
+  if(!ch) return;
+  let cur=0;
+  (ch.schedule||[]).forEach(item=>{
+    item.startMin=safe(cur);
+    const prog=item.type==='ad'?null:getProgItem(item.id);
+    const dur=item.type==='ad'?10:safe((prog&&(prog.dur||prog.duration)),60);
+    item.endMin=safe(cur)+dur;
+    cur=item.endMin;
+  });
+}
+function hasOverlap(ch,startMin,dur,excludeIdx=-1){
+  const end=startMin+dur;
+  return (ch.schedule||[]).some((item,idx)=>{
+    if(idx===excludeIdx) return false;
+    return startMin<safe(item.endMin)&&end>safe(item.startMin);
+  });
+}
+function getTotalScheduledMin(ch){
+  if(!ch||!ch.schedule||!ch.schedule.length) return 0;
+  return safe((ch.schedule[ch.schedule.length-1]||{}).endMin,0);
+}
+
+// ════════════════════════════════════════════════
+// GAME LOOP
+// ════════════════════════════════════════════════
+let clockTick=null;
+function startClock(){
+  if(clockTick) clearInterval(clockTick);
+  clockTick=setInterval(()=>{
+    if(!G.live) return;
+    G.minute=safe(G.minute)+safe(G.speed,1);
+    if(G.minute>=60){
+      G.minute=0; G.hour=safe(G.hour)+1;
+      if(G.hour>=24){
+        G.hour=0; G.day=safe(G.day)+1;
+        onNewDay();
+      }
+      recalcAudience();
+    }
+    const earn=calcEarnPerSec()*safe(G.speed,1);
+    G.money=safe(G.money)+safe(earn);
+    G.earned=safe(G.earned)+safe(earn);
+    G.monthlyEarn=safe(G.monthlyEarn)+safe(earn);
+    if(Math.random()<.003*safe(G.speed,1)) randomEvent();
+    updateTopBar(); updateLeftPanel();
+  },1000);
+}
+function onNewDay(){
+  G.dailyDone=false;
+  G.monthDay=safe(G.monthDay)+1;
+  changeTrend();
+  refreshDailyFilms();
+  updateContractTimers();
+  if(G.monthDay>=30){
+    G.monthDay=0;
+    sendMonthlyReport();
+  }
+  sendDailyMessages();
+}
+function updateContractTimers(){
+  (G.contracts||[]).forEach(c=>{
+    if(c.active) c.daysLeft=safe(c.daysLeft)-1;
+    if(c.daysLeft<=0) c.active=false;
+  });
+  sendMessage('Sistema','Contratti aggiornati',`Giorno ${G.day}: ${(G.contracts||[]).filter(c=>c.active).length} contratti pubblicitari attivi.`,'info');
+}
+
+// ════════════════════════════════════════════════
+// TOP BAR & HUD
+// ════════════════════════════════════════════════
+function updateTopBar(){
+  document.getElementById('tclk').textContent=timeClock();
+  document.getElementById('tb-m').textContent='€'+fmtK(safe(G.money));
+  document.getElementById('tb-a').textContent=fmtK(safe(G.audience));
+  document.getElementById('tb-r').textContent=safe(G.rating)+'%';
+  document.getElementById('tb-g').textContent=safe(G.gems);
+  document.getElementById('tb-day').textContent='G'+safe(G.day);
+  renderChannelBtns();
+  const unread=(G.messages||[]).filter(m=>!m.read).length;
+  document.getElementById('msg-dot').style.display=unread?'inline-block':'none';
+  const tabMsg=document.getElementById('tab-msg');
+  if(unread) tabMsg.classList.add('tab-notif'); else tabMsg.classList.remove('tab-notif');
+  document.getElementById('unread-cnt').style.display=unread?'inline':'none';
+  document.getElementById('unread-cnt').textContent=unread+' non letti';
+}
+function updateLeftPanel(){
+  // OAS
+  const el=document.getElementById('oas-list');
+  const now=safe(G.hour)*60+safe(G.minute);
+  const items=[];
+  (G.channels||[]).forEach(ch=>{
+    if(!ch.unlocked) return;
+    const item=(ch.schedule||[]).find(it=>it.type!=='ad'&&safe(it.startMin)<=now&&safe(it.endMin)>now);
+    if(item){const prog=getProgItem(item.id);if(prog) items.push({ch:ch.name,prog,aud:safe(ch.audience)});}
+  });
+  el.innerHTML=items.length?items.map(({ch,prog,aud})=>`
+    <div class="oas-row" onclick="showProgDetail('${prog.id||prog.title}')">
+      <div class="oas-ico">${prog.ico||'🎬'}</div>
+      <div class="oas-info"><div class="oas-nm">${prog.name||prog.title}</div><div class="oas-sub">${ch}</div></div>
+      ${G.live?`<div class="live-dot2"></div>`:''}
+      <div class="oas-v">${fmtK(aud)}</div>
+    </div>`).join(''):'<div style="color:var(--mu);font-size:9px;padding:3px;">Nessun programma in onda</div>';
+  // LV bar
+  const L=LEVELS[safe(G.level)-1];
+  document.getElementById('lv-n').textContent=safe(G.level);
+  document.getElementById('lv-name').textContent=L?L.n:'MAX';
+  if(L){
+    const pcts=L.o.map(o=>getObjPct(o).pct);
+    const avg=pcts.reduce((a,b)=>a+b,0)/pcts.length;
+    document.getElementById('lv-fill').style.width=safe(avg)+'%';
+    document.getElementById('lv-pct').textContent=Math.floor(safe(avg))+'%';
+  }
+  // Studio tab
+  document.getElementById('st-aud').textContent=fmtK(safe(G.audience));
+  document.getElementById('st-earn').textContent='€'+fmtK(calcEarnPerSec()*3600)+'/h';
+  document.getElementById('st-rating').textContent=safe(G.rating)+'%';
+  document.getElementById('st-trend').textContent=G.trend||'–';
+  document.getElementById('st-sal').textContent='€'+fmtK((G.staff||[]).reduce((a,s)=>a+safe(s.salary),0));
+  document.getElementById('obj-lv-n').textContent=safe(G.level);
+  renderStudioObjs();
+  renderChannelStatus();
+  document.getElementById('ticker').textContent=
+    `📺 EMPIRE LIVE  |  👁 ${fmtK(G.audience)} spettatori  |  💰 €${fmtK(G.money)}  |  Rating: ${G.rating}%  |  Trend: ${G.trend}  |  Giorno ${G.day}  |  `;
+}
+function renderChannelBtns(){
+  document.getElementById('chs').innerHTML=(G.channels||[]).map((ch,i)=>
+    `<div class="ch${i===G.ch?' on':''}${!ch.unlocked?' lk':''}" onclick="${ch.unlocked?'switchCh('+i+')':''}" style="color:${ch.unlocked?(['#0A84FF','#00E87A','#FF7A00','#BF5FFF','#FF2244'][i]):'var(--mu)'};border-color:${ch.unlocked?(['#0A84FF','#00E87A','#FF7A00','#BF5FFF','#FF2244'][i]):'var(--b1)'}">
+      ${ch.name}${ch.unlocked?'':'🔒'}
+    </div>`).join('');
+}
+function renderChannelStatus(){
+  const el=document.getElementById('ch-status');
+  const now=safe(G.hour)*60+safe(G.minute);
+  el.innerHTML=(G.channels||[]).filter(c=>c.unlocked).map(ch=>{
+    const item=(ch.schedule||[]).find(it=>it.type!=='ad'&&safe(it.startMin)<=now&&safe(it.endMin)>now);
+    const prog=item?getProgItem(item.id):null;
+    return `<div class="fin-row">
+      <span class="fl">${ch.name}</span>
+      <span class="fv" style="color:${prog?'var(--gr)':'var(--mu)'}">${prog?prog.ico+' '+(prog.name||prog.title):G.live?'Slot vuoto':'Offline'}</span>
+      <span style="color:var(--gold);font-size:10px;">${fmtK(safe(ch.audience))}</span>
+    </div>`;
+  }).join('');
+}
+
+function showDetail(type){
+  if(type==='money'){
+    showPop('💰','FINANZE',`<div style="text-align:left;line-height:2.2;font-size:12px;">
+      <div>💰 Budget: <b style="color:var(--gold)">€${fmtK(G.money)}</b></div>
+      <div>📈 Guadagnato totale: <b style="color:var(--gr)">€${fmtK(G.earned)}</b></div>
+      <div>💵 Guadagno/h: <b style="color:var(--gr)">€${fmtK(calcEarnPerSec()*3600)}</b></div>
+      <div>👥 Stipendi/giorno: <b style="color:var(--red)">€${fmtK((G.staff||[]).reduce((a,s)=>a+safe(s.salary),0))}</b></div>
+      <div>📢 Contratti attivi: <b>${(G.contracts||[]).filter(c=>c.active).length}</b></div>
+      <div>💎 Gemme: <b style="color:var(--pu)">${G.gems}</b></div>
+    </div>`,'ok');
+  } else if(type==='audience'){
+    showPop('👁','AUDIENCE',`<div style="text-align:left;line-height:2.2;font-size:12px;">
+      <div>👁 Audience totale: <b style="color:var(--gold)">${fmtK(G.audience)}</b></div>
+      ${(G.channels||[]).filter(c=>c.unlocked).map(ch=>`<div>${ch.name}: <b style="color:var(--gr)">${fmtK(safe(ch.audience))}</b></div>`).join('')}
+      <div>📈 Rating: <b>${G.rating}%</b></div>
+      <div>🔥 Trend: <b>${G.trend} (×${safe(G.trendMult,1).toFixed(2)})</b></div>
+      <div>🔧 Bonus upgrade: <b>+${Math.round((calcUpgBonus()-1)*100)}%</b></div>
+      <div>👥 Bonus staff: <b>+${Math.round((calcStaffBonus()-1)*100)}%</b></div>
+    </div>`,'ok');
+  } else if(type==='rating'){
+    showPop('📈','RATING',`<div style="text-align:left;line-height:2.2;font-size:12px;">
+      <div>⭐ Rating attuale: <b style="color:var(--gold)">${G.rating}%</b></div>
+      <div>📊 Programmi attivi: <b>${(G.channels||[]).reduce((a,ch)=>a+ch.schedule.filter(it=>it.type!=='ad').length,0)}</b></div>
+      <div>🎬 Film in libreria: <b>${G.ownedFilms.size}</b></div>
+      <div>🏆 Livello: <b>${G.level}</b></div>
+      <div>💪 Staff: <b>${(G.staff||[]).length}</b></div>
+    </div>`,'ok');
+  }
+}
+
+// ════════════════════════════════════════════════
+// TABS / SCREENS
+// ════════════════════════════════════════════════
+function showTab(id,el){
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tp-'+id).classList.add('on');
+  if(el) el.classList.add('on');
+  if(id==='pal')     renderPal();
+  if(id==='film')    renderFilm();
+  if(id==='pub')     renderPub();
+  if(id==='staff')   renderStaff();
+  if(id==='pos')     renderPositions();
+  if(id==='upgrade') renderUpgrade();
+  if(id==='casse')   renderCasse();
+  if(id==='livello') renderLevelPane();
+  if(id==='msg')     renderMessages();
+}
+function switchCh(i){
+  if(!(G.channels||[])[i]?.unlocked) return;
+  G.ch=i; renderChannelBtns();
+  if(document.getElementById('tp-pal').classList.contains('on')) renderPal();
+}
+
+// ════════════════════════════════════════════════
+// PALINSESTO EXCEL TIMELINE
+// ════════════════════════════════════════════════
+const MIN_PX=2; // 2px per minute
+const TRACK_H=52;
+function renderPal(){
+  const ch=getCh();
+  rebuildTimes(ch);
+  document.getElementById('pal-ch-nm')||null;
+  const totalPx=1440*MIN_PX;
+  // Time header
+  const hd=document.getElementById('pal-time-hd');
+  hd.style.width=totalPx+'px';
+  let hhtml='';
+  for(let h=0;h<24;h++){
+    hhtml+=`<div class="pal-hour-mark" style="left:${h*60*MIN_PX}px;">${String(h).padStart(2,'0')}:00</div>`;
+  }
+  hd.innerHTML=hhtml;
+  // Rows
+  const rows=document.getElementById('pal-rows');
+  const now=safe(G.hour)*60+safe(G.minute);
+  const nowPx=now*MIN_PX;
+  let html='';
+  (G.channels||[]).forEach((channel,ci)=>{
+    const colors=['#0A2A5C','#0A3A1A','#3A1A0A','#2A0A3A','#3A0A1A'];
+    const blocked=channel.unlocked?'':`<div style="position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--mu);">🔒 Sblocca LV${[1,5,10,15,20][ci]}</div>`;
+    html+=`<div class="pal-row">
+      <div class="pal-row-label${channel.unlocked?'':' lk'}" style="font-size:9px;">${channel.name}</div>
+      <div class="pal-track" id="track-${ci}" style="min-width:${totalPx}px;position:relative;background:${colors[ci]}22;">${blocked}`;
+    if(channel.unlocked){
+      // programs
+      (channel.schedule||[]).forEach((item,idx)=>{
+        const dur=safe(item.endMin)-safe(item.startMin);
+        const left=safe(item.startMin)*MIN_PX;
+        const width=Math.max(4,dur*MIN_PX);
+        if(item.type==='ad'){
+          const pub=PUBS_DATA.find(p=>p.id===item.adId);
+          html+=`<div class="pal-ad-block" style="left:${left}px;width:${width}px;" onclick="removeSchItem(${ci},${idx})" title="Pub: ${pub?pub.name:'?'} (click rimuovi)">
+            ${width>30?'📢':''}</div>`;
+        } else {
+          const prog=getProgItem(item.id);
+          if(!prog) return;
+          const ptypeColors={'news':'#0A4A8A','show':'#4A0A6A','sport':'#0A4A1A','culture':'#2A3A0A','fiction':'#4A2A0A','film':'#1A1A3A'};
+          const bg=ptypeColors[prog.type||prog.g||'film']||'#1A2A3A';
+          const live=G.live&&safe(item.startMin)<=now&&safe(item.endMin)>now;
+          const st=item.staffId?G.staff.find(s=>s.id===item.staffId):null;
+          html+=`<div class="pal-prog-block${live?' live-now-glow':''}" 
+            style="left:${left}px;width:${width}px;background:${bg};" 
+            onclick="showSchItemMenu(${ci},${idx})"
+            title="${prog.name||prog.title} (${dur}min)${st?' — '+st.name:' ⚠️ No staff'}">
+            <div class="ppb-ico">${prog.ico||'🎬'}</div>
+            ${width>60?`<div class="ppb-info"><div class="ppb-name">${prog.name||prog.title}</div><div class="ppb-dur">${dur}min${st?'·👤':' ⚠️'}</div></div>`:''}
+            ${live?'<div style="position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--red);border-radius:50%;animation:blink 1s infinite;"></div>':''}
+          </div>`;
+        }
+      });
+      // Now line
+      html+=`<div class="pal-live-now" style="left:${nowPx}px;"></div>`;
+    }
+    html+=`</div></div>`;
+  });
+  rows.innerHTML=html;
+  // Total audience
+  const tot=(G.channels||[]).filter(c=>c.unlocked).reduce((a,c)=>a+safe(c.audience),0);
+  document.getElementById('pal-tot').textContent=fmtK(tot)+' spett.';
+}
+
+function showSchItemMenu(ci,idx){
+  const ch=G.channels[ci];
+  const item=ch.schedule[idx];
+  if(!item) return;
+  if(item.type==='ad'){
+    const pub=PUBS_DATA.find(p=>p.id===item.adId);
+    showPop('📢','Pubblicità: '+(pub?pub.name:'?'),`Durata: 10min<br>Audience richiesta: ${pub?fmtK(pub.minAud):'–'}`,
+      [{t:'🗑 Rimuovi',fn:()=>{ch.schedule.splice(idx,1);rebuildTimes(ch);renderPal();}},'cancel']);
+    return;
+  }
+  const prog=getProgItem(item.id);
+  if(!prog) return;
+  const st=item.staffId?G.staff.find(s=>s.id===item.staffId):null;
+  const isFilm=!PROGRAMS.find(p=>p.id===item.id);
+  const choices=[
+    {t:'📢 Inserisci Pub dopo',fn:()=>openAdAfter(ci,idx)},
+  ];
+  if(!isFilm) choices.push({t:'👤 Assegna Staff',fn:()=>openAssignStaff(ci,idx)});
+  choices.push({t:'🗑 Rimuovi',fn:()=>{ch.schedule.splice(idx,1);rebuildTimes(ch);renderPal();}});
+  choices.push({t:'✕ Annulla',fn:()=>{}});
+  showPop(prog.ico||'🎬',prog.name||prog.title,
+    `Durata: ${prog.dur||prog.duration}min | Rating: ${prog.rating||prog.r}<br>Inizio: ${minToTime(item.startMin)} — Fine: ${minToTime(item.endMin)}<br>Staff: <b style="color:${st?'var(--gr)':'var(--red)'}">${st?st.name:'Non assegnato'}</b>${isFilm?'<br><span style="color:var(--bl)">📽 Film — nessun staff richiesto</span>':''}`,
+    choices);
+}
+function openAdAfter(ci,idx){
+  const avail=PUBS_DATA.filter(p=>p.lv<=G.level&&safe(G.audience)>=p.minAud);
+  if(!avail.length){showPop('⚠️','Nessuna pubblicità disponibile','Aumenta l\'audience per sbloccare i contratti.','ok');return;}
+  showPop('📢','Inserisci Pubblicità',`Scegli il contratto da inserire dopo questo programma:`,
+    avail.map(p=>({t:`${p.ico} ${p.name} (×${p.mult})`,fn:()=>{
+      G.channels[ci].schedule.splice(idx+1,0,{type:'ad',adId:p.id,startMin:0,endMin:0});
+      rebuildTimes(G.channels[ci]);renderPal();
+    }})).concat([{t:'✕ Annulla',fn:()=>{}}]));
+}
+function openAssignStaff(ci,idx){
+  const item=G.channels[ci].schedule[idx];
+  const prog=getProgItem(item.id);
+  if(!prog) return;
+  const ptype=prog.type||prog.g;
+  // Only presenters compatible with program type
+  const compat=G.staff.filter(s=>{
+    const rc=ROLE_COMPAT[s.role];
+    return rc===null||!rc||(rc&&rc.includes(ptype));
+  });
+  if(!compat.length){showPop('⚠️','Nessuno staff compatibile','Assumi un presentatore o giornalista per questo programma.','ok');return;}
+  showPop('👤','Assegna Staff','Scegli chi manderà in onda '+( prog.name||prog.title)+':',
+    compat.map(s=>({t:`${s.ico} ${s.name} (${s.role}, Lv${s.lv}) — +${s.bonus}% aud`,fn:()=>{
+      G.channels[ci].schedule[idx].staffId=s.id; renderPal();
+    }})).concat([{t:'✕ Annulla',fn:()=>{}}]));
+}
+function openAddProg(){
+  const avail=[...PROGRAMS.filter(p=>p.lv<=safe(G.level)),...[...G.ownedFilms].map(id=>ALL_FILMS.find(f=>f.id===id)).filter(Boolean)];
+  const ch=getCh();
+  const usedMin=getTotalScheduledMin(ch);
+  if(usedMin>=1440){showPop('⚠️','Palinsesto Pieno','Il palinsesto è già pieno per oggi. Rimuovi qualche programma.','ok');return;}
+  showPop('📺','Aggiungi Programma',`Palinsesto: ${minToTime(usedMin)} usato — ${minToTime(1440-usedMin)} disponibile`,
+    avail.map(p=>{
+      const dur=p.dur||p.duration;
+      const canFit=usedMin+dur<=1440;
+      return {t:`${p.ico||'🎬'} ${p.name||p.title} (${dur}min)${canFit?'':' — ⚠️ non entra'}`,fn:()=>{
+        if(!canFit){showPop('⚠️','Non c\'è spazio','Il programma è troppo lungo per lo spazio disponibile.','ok');return;}
+        ch.schedule.push({type:'prog',id:p.id,staffId:null,startMin:0,endMin:0});
+        rebuildTimes(ch);renderPal();
+      }};
+    }).concat([{t:'✕ Annulla',fn:()=>{}}]));
+}
+function minToTime(m){const h=Math.floor(safe(m)/60)%24,mn=safe(m)%60;return String(h).padStart(2,'0')+':'+String(mn).padStart(2,'0');}
+
+// ════════════════════════════════════════════════
+// FILM
+// ════════════════════════════════════════════════
+function getDailyFilms(){
+  const seed=safe(G.day);
+  function hash(s,n){let h=safe(n)*2654435761;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h;}
+  return [...ALL_FILMS].sort((a,b)=>hash(a.id,seed)-hash(b.id,seed)).slice(0,20);
+}
+function refreshDailyFilms(){
+  if(safe(G.day)!==safe(G.filmRefreshDay)){
+    G.availableFilms=getDailyFilms();
+    G.filmRefreshDay=G.day;
+  }
+}
+function renderFilm(){
+  refreshDailyFilms();
+  const films=G.availableFilms||getDailyFilms();
+  document.getElementById('film-cnt').textContent=`${G.ownedFilms.size}/${films.length}`;
+  document.getElementById('film-refresh-info').textContent=`Giorno ${G.day} — Si aggiornano ogni 24 ore (${films.length} titoli oggi)`;
+  const el=document.getElementById('film-list');
+  el.innerHTML='';
+  films.forEach(f=>{
+    const owned=G.ownedFilms.has(f.id);
+    const stars=starsStr(safe(f.r,f.rating)/20);
+    const d=document.createElement('div');d.className='film-item';
+    d.innerHTML=`<div class="film-poster">${f.ico}</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;">${f.title}</div>
+        <div style="font-size:9px;color:var(--mu);">${f.g} · ${f.dur}min</div>
+        <div class="stars sm-stars" style="font-size:10px;">${stars}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        ${owned
+          ?`<span class="pill pg">ACQUISTAT</span><br><button class="btn bb sm" onclick="addFilmToPal('${f.id}')" style="margin-top:3px;">+ PAL</button>`
+          :`<div style="color:var(--gold);font-size:10px;font-weight:700;">€${fmtK(f.cost)}</div>
+           <button class="btn bg sm" onclick="buyFilm('${f.id}')" style="margin-top:2px;">COMPRA</button>`}
+      </div>`;
+    el.appendChild(d);
+  });
+}
+function buyFilm(id){
+  const f=ALL_FILMS.find(f=>f.id===id);
+  if(!f||safe(G.money)<f.cost){showPop('⚠️','Fondi insufficienti!','','ok');return;}
+  G.money=safe(G.money)-f.cost;G.ownedFilms.add(id);updateTopBar();renderFilm();
+  showReward('🎬 FILM!',[f.ico+' '+f.title,'Rating '+f.r,'Durata '+f.dur+'min'],f.ico);
+}
+function addFilmToPal(id){
+  const ch=getCh();
+  const f=ALL_FILMS.find(f=>f.id===id);
+  if(!f){return;}
+  const usedMin=getTotalScheduledMin(ch);
+  if(usedMin+safe(f.dur)>1440){showPop('⚠️','Non c\'è spazio','Rimuovi qualche programma dal palinsesto.','ok');return;}
+  ch.schedule.push({type:'prog',id,staffId:null,startMin:0,endMin:0}); // films don't need staff
+  rebuildTimes(ch);renderFilm();
+  showPop('✅',f.ico+' '+f.title+' aggiunto!',`Al palinsesto di ${ch.name}<br>📽 Durata: ${f.dur} min — nessun presentatore richiesto`,'ok');
+}
+function starsStr(v,max=5){
+  const full=Math.round(Math.min(max,Math.max(0,safe(v))));
+  return '★'.repeat(full)+'☆'.repeat(max-full);
+}
+
+// ════════════════════════════════════════════════
+// PUBBLICITÀ (Contracts)
+// ════════════════════════════════════════════════
+function renderPub(){
+  document.getElementById('pub-a').textContent=fmtK(safe(G.audience));
+  document.getElementById('pub-cnt').textContent=(G.contracts||[]).filter(c=>c.active).length;
+  document.getElementById('pub-earn').textContent='€'+fmtK(calcEarnPerSec()*3600)+'/h';
+  const el=document.getElementById('pub-list');
+  el.innerHTML='';
+  PUBS_DATA.filter(p=>p.lv<=safe(G.level)).forEach(p=>{
+    const existing=(G.contracts||[]).find(c=>c.pubId===p.id);
+    const canSign=safe(G.audience)>=p.minAud&&!existing;
+    const d=document.createElement('div');d.className='contract-card';
+    d.innerHTML=`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+      <span style="font-size:20px;">${p.ico}</span>
+      <div style="flex:1;"><div style="font-size:11px;font-weight:700;">${p.name}</div>
+      <div style="font-size:9px;color:var(--mu);">${p.cat} · ×${p.mult} · Min ${fmtK(p.minAud)} aud · ${p.dur} giorni</div></div>
+      <span class="pill ${existing&&existing.active?'pg':canSign?'pb':'pr'}">${existing&&existing.active?`✅ ${existing.daysLeft}gg`:canSign?'Disponibile':'N/A'}</span>
+    </div>`;
+    if(!existing){
+      d.innerHTML+=`<button class="btn ${canSign?'bg':'bgr'} sm bw" onclick="${canSign?'signContract(\''+p.id+'\')':''}" ${canSign?'':'disabled'}>
+        ${canSign?'✅ FIRMA CONTRATTO ('+p.dur+' giorni)':'🔒 Audience insufficiente'}</button>`;
+    }
+    el.appendChild(d);
+  });
+  // Active contracts
+  const ac=document.getElementById('active-contracts');
+  const actives=(G.contracts||[]).filter(c=>c.active);
+  if(!actives.length){ac.innerHTML='<div style="color:var(--mu);font-size:9px;">Nessun contratto attivo</div>';return;}
+  ac.innerHTML=actives.map((c,i)=>{
+    const p=PUBS_DATA.find(p=>p.id===c.pubId);
+    return `<div class="contract-card">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <span style="font-size:18px;">${p?p.ico:'📢'}</span>
+        <div style="flex:1;"><div style="font-size:11px;font-weight:700;">${p?p.name:'?'}</div>
+        <div style="font-size:9px;color:var(--gr);">Scade in ${safe(c.daysLeft)} giorni · ×${p?p.mult:'?'}</div></div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn bb sm" onclick="renewContract(${i})">🔄 Rinnova</button>
+          <button class="btn br sm" onclick="cancelContract(${i})">✕ Cancella</button>
+        </div>
+      </div></div>`;
+  }).join('');
+}
+function signContract(pubId){
+  const p=PUBS_DATA.find(p=>p.id===pubId);
+  if(!p||safe(G.audience)<p.minAud) return;
+  (G.contracts=G.contracts||[]).push({pubId,startDay:G.day,daysLeft:p.dur,active:true});
+  renderPub();sendMessage(p.name,'Contratto firmato',`Hai siglato un contratto con ${p.name}. Durata: ${p.dur} giorni. Moltiplicatore: ×${p.mult}`,'success');
+}
+function renewContract(idx){
+  const c=(G.contracts||[])[idx];const p=PUBS_DATA.find(p=>p.id===c.pubId);
+  if(!c||!p) return;
+  c.daysLeft=safe(c.daysLeft)+p.dur;
+  renderPub();showPop('✅','Contratto Rinnovato',`${p.name} rinnovato per altri ${p.dur} giorni.`,'ok');
+}
+function cancelContract(idx){
+  if(G.contracts&&G.contracts[idx]) G.contracts[idx].active=false;
+  renderPub();
+}
+
+// ════════════════════════════════════════════════
+// STAFF
+// ════════════════════════════════════════════════
+function renderStaff(){
+  document.getElementById('staff-cnt').textContent=(G.staff||[]).length;
+  const el=document.getElementById('staff-list');
+  el.innerHTML='';
+  if(!(G.staff||[]).length){
+    el.innerHTML='<div style="color:var(--mu);text-align:center;padding:14px;font-size:11px;">Nessuno staff. Clicca ➕ ASSUMI!</div>';
+    return;
+  }
+  (G.staff||[]).forEach((s,i)=>{
+    const upCost=Math.floor(200*Math.pow(1.65,safe(s.lv)));
+    const pips=Array(10).fill(0).map((_,j)=>`<div class="pip${j<safe(s.lv)?' on':''}"></div>`).join('');
+    const d=document.createElement('div');d.className='staff-card';
+    d.innerHTML=`<div class="sc-top">
+      <div class="sc-face"><canvas id="face-${s.id}" width="50" height="50"></canvas></div>
+      <div style="flex:1;">
+        <div style="font-size:12px;font-weight:700;">${s.ico} ${s.name} ${starsStr(safe(s.stars))}</div>
+        <div style="font-size:9px;color:var(--mu);">${s.role}</div>
+        <div style="font-size:9px;color:var(--gold);">Lv${s.lv}/10 · +${safe(s.bonus).toFixed(1)}% aud</div>
+        <div style="display:flex;gap:2px;margin-top:3px;">${pips}</div>
+      </div>
+      <div style="text-align:right;font-size:9px;color:var(--og);">€${s.salary}/g</div>
+    </div>
+    <div class="sc-btns">
+      ${safe(s.lv)<10?`<button class="btn bg sm" onclick="upgradeStaff(${i})">⬆ Lv€${fmtK(upCost)}</button>`:'<span class="pill pg sm-stars">MAX</span>'}
+      <button class="btn bb sm" onclick="renewStaff(${i})">🔄 Rinnova</button>
+      <button class="btn br sm" onclick="confirmFire(${i})">🔥 Licenzia</button>
+    </div>`;
+    el.appendChild(d);
+    requestAnimationFrame(()=>{const fc=document.getElementById('face-'+s.id);if(fc)drawFace(fc,s.role,safe(s.seed));});
+  });
+}
+function openHireMenu(){
+  // Show candidate pool (not yet hired)
+  const available=CHARS_POOL.filter(c=>!G.hired.has(c.id)&&!c.vip);
+  if(!available.length){showPop('ℹ️','Tutti assunti','Hai già assunto tutti i personaggi disponibili!','ok');return;}
+  const el=document.createElement('div');el.style.cssText='display:flex;flex-direction:column;gap:6px;max-height:55vh;overflow-y:auto;';
+  available.slice(0,12).forEach(c=>{
+    const cost=safe(c.sal)*2;
+    const row=document.createElement('div');row.className='hire-candidate';
+    row.innerHTML=`<div class="hc-face"><canvas id="hc-${c.id}" width="44" height="44"></canvas></div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;">${c.ico} ${c.name}</div>
+        <div style="font-size:9px;color:var(--mu);">${c.role}</div>
+        <div class="stars sm-stars">${starsStr(safe(c.stars))}</div>
+        <div style="font-size:9px;color:var(--di);">${c.desc}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="color:var(--og);font-size:10px;font-weight:700;">€${fmtK(cost)}</div>
+        <button class="btn bg sm" onclick="hireChar('${c.id}')" style="margin-top:3px;">ASSUMI</button>
+      </div>`;
+    el.appendChild(row);
+    requestAnimationFrame(()=>{const fc=document.getElementById('hc-'+c.id);if(fc)drawFace(fc,c.role,safe(c.seed));});
+  });
+  showPopEl('👥','Scegli il Tuo Team',el,[{t:'✕ CHIUDI',fn:()=>{}}]);
+}
+function hireChar(id){
+  const c=CHARS_POOL.find(c=>c.id===id);
+  if(!c) return;
+  const cost=safe(c.sal)*2;
+  if(safe(G.money)<cost){showPop('⚠️','Fondi insufficienti!','Servono €'+fmtK(cost),'ok');return;}
+  G.money=safe(G.money)-cost;
+  G.hired.add(id);
+  G.staff.push({...c,lv:1,id:'s_'+id,origId:id,salary:Math.floor(safe(c.sal)*.7)});
+  closePop();updateTopBar();renderStaff();
+  showReward('👥 ASSUNTO!',[c.ico+' '+c.name,c.role,starsStr(safe(c.stars)),'+'+c.bonus+'% audience'],c.ico);
+}
+function upgradeStaff(i){
+  const s=(G.staff||[])[i];if(!s||safe(s.lv)>=10) return;
+  const cost=Math.floor(200*Math.pow(1.65,safe(s.lv)));
+  if(safe(G.money)<cost){showPop('⚠️','Fondi insufficienti!','Servono €'+fmtK(cost),'ok');return;}
+  G.money=safe(G.money)-cost;s.lv=safe(s.lv)+1;
+  s.bonus=safe(s.bonus)+safe(s.baseBonus||s.bonus*.1);
+  s.salary=Math.floor(safe(s.salary)*(1+safe(s.lv)*.15));
+  updateTopBar();renderStaff();
+}
+function renewStaff(i){
+  const s=(G.staff||[])[i];if(!s) return;
+  const cost=Math.floor(safe(s.salary)*3);
+  if(safe(G.money)<cost){showPop('⚠️','Fondi insufficienti!','Servono €'+fmtK(cost),'ok');return;}
+  G.money=safe(G.money)-cost;
+  updateTopBar();renderStaff();
+  showPop('🔄','Contratto Rinnovato',`${s.name} è felice di restare! Il suo morale è al massimo.`,'ok');
+}
+function confirmFire(i){
+  const s=(G.staff||[])[i];if(!s) return;
+  showPop('🔥','Licenzia '+s.name,`Sei sicuro di voler licenziare ${s.name}?`,
+    [{t:'✅ Sì, licenzia',fn:()=>{G.hired.delete(s.origId||s.id);G.staff.splice(i,1);renderStaff();updateTopBar();}},{t:'✕ Annulla',fn:()=>{}}]);
+}
+
+// Staff face canvas
+function drawFace(canvas,role,seed){
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const bgs=['#0E2A50','#1A0E40','#0E2820','#1A1A0E','#2A0E0E','#0E1A2A'];
+  ctx.fillStyle=bgs[safe(seed)%bgs.length];ctx.fillRect(0,0,w,h);
+  const cx=w/2,cy=h*.55,sz=Math.min(w,h)*.32;
+  const skins=['#D4A882','#C68642','#FDBCB4','#8D5524','#E8B89A','#F5CBA7'];
+  const sk=skins[safe(seed)*3%skins.length];
+  ctx.fillStyle=sk;ctx.beginPath();ctx.ellipse(cx,cy,sz,sz*1.1,0,0,Math.PI*2);ctx.fill();
+  const hairs=['#111','#4A2000','#8B6914','#C0392B','#666','#1A1A6E'];
+  ctx.fillStyle=hairs[(safe(seed)*7)%hairs.length];
+  ctx.beginPath();ctx.ellipse(cx,cy-sz*.5,sz,sz*.6,0,0,Math.PI);ctx.fill();
+  ['#fff','#fff'].forEach((ec,ei)=>{
+    const ex=cx+(ei===0?-1:1)*sz*.32;const ey=cy-sz*.12;
+    ctx.fillStyle=ec;ctx.beginPath();ctx.ellipse(ex,ey,sz*.18,sz*.14,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#111';ctx.beginPath();ctx.arc(ex,ey,sz*.09,0,Math.PI*2);ctx.fill();
+  });
+  ctx.strokeStyle='#773322';ctx.lineWidth=sz*.08;ctx.lineCap='round';
+  ctx.beginPath();ctx.arc(cx,cy+sz*.2,sz*.2,0.2,Math.PI-.2);ctx.stroke();
+  // Role badge
+  const roleIco={'Presentatore':'🎤','Giornalista':'📝','Cameraman':'🎥','Tecnico':'🔧','Regista':'🎬','PR Manager':'📣','Scenografo':'🎨'}[role]||'👤';
+  ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(0,h*.75,w,h*.25);
+  ctx.font=`${Math.max(8,w*.18)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(roleIco,w*.85,h*.85);
+}
+
+// ════════════════════════════════════════════════
+// POSTAZIONI
+// ════════════════════════════════════════════════
+function renderPositions(){
+  const el=document.getElementById('pos-list');
+  el.innerHTML='';
+  POSITIONS.forEach(pos=>{
+    const staffId=(G.positions||{})[pos.id];
+    const assigned=staffId?G.staff.find(s=>s.id===staffId):null;
+    const d=document.createElement('div');d.className='pos-row';
+    d.innerHTML=`<div class="pos-ico">${pos.ico}</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;">${pos.name}</div>
+        <div style="font-size:9px;color:var(--mu);">Richiede: ${pos.reqRole.join(' o ')}</div>
+        ${assigned?`<div style="font-size:10px;color:var(--gr);margin-top:2px;">👤 ${assigned.name} (Lv${assigned.lv})</div>`:'<div style="font-size:9px;color:var(--red);margin-top:2px;">⚠️ Non assegnato</div>'}
+      </div>
+      <div>
+        <button class="btn ${assigned?'bb':'bg'} sm" onclick="openAssignPosition('${pos.id}')">${assigned?'↔ Cambia':'+ Assegna'}</button>
+        ${assigned?`<button class="btn br sm" onclick="unassignPos('${pos.id}')" style="margin-top:3px;display:block;">✕</button>`:''}
+      </div>`;
+    el.appendChild(d);
+  });
+}
+function openAssignPosition(posId){
+  const pos=POSITIONS.find(p=>p.id===posId);
+  if(!pos) return;
+  const compat=G.staff.filter(s=>pos.reqRole.includes(s.role));
+  if(!compat.length){showPop('⚠️','Nessuno staff compatibile','Assumi: '+pos.reqRole.join(' o '),'ok');return;}
+  showPop('🗂','Assegna a '+pos.name,'Scegli lo staff da assegnare:',
+    compat.map(s=>({t:`${s.ico} ${s.name} (Lv${s.lv}) ${starsStr(safe(s.stars))}`,fn:()=>{
+      G.positions=G.positions||{};G.positions[posId]=s.id;renderPositions();
+    }})).concat([{t:'✕ Annulla',fn:()=>{}}]));
+}
+function unassignPos(posId){G.positions=G.positions||{};delete G.positions[posId];renderPositions();}
+
+// ════════════════════════════════════════════════
+// UPGRADE
+// ════════════════════════════════════════════════
+function renderUpgrade(){
+  const el=document.getElementById('upgrade-list');el.innerHTML='';
+  UPGRADES.forEach(u=>{
+    const cost=Math.floor(safe(u.cost)*Math.pow(safe(u.mult),safe(u.cur)));
+    const maxed=safe(u.cur)>=u.max;
+    const pips=Array(u.max).fill(0).map((_,j)=>`<div class="pip${j<safe(u.cur)?' on':''}"></div>`).join('');
+    const d=document.createElement('div');d.className='card';d.style.marginBottom='6px';
+    d.innerHTML=`<div style="display:flex;align-items:center;gap:8px;">
+      <div style="font-size:22px;width:32px;text-align:center;">${u.ico}</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;">${u.name} <span style="color:var(--mu);font-size:9px;">Lv${u.cur}/${u.max}</span></div>
+        <div style="font-size:9px;color:var(--mu);">${u.desc}</div>
+        <div style="display:flex;gap:2px;margin-top:4px;">${pips}</div>
+      </div>
+      ${maxed?`<span class="pill pg">MAX</span>`:`<button class="btn bg sm" onclick="buyUpgrade('${u.id}')">⬆ €${fmtK(cost)}</button>`}
+    </div>`;
+    el.appendChild(d);
+  });
+}
+function buyUpgrade(id){
+  const u=UPGRADES.find(u=>u.id===id);if(!u||safe(u.cur)>=u.max) return;
+  const cost=Math.floor(safe(u.cost)*Math.pow(safe(u.mult),safe(u.cur)));
+  if(safe(G.money)<cost){showPop('⚠️','Fondi insufficienti!','Servono €'+fmtK(cost),'ok');return;}
+  G.money=safe(G.money)-cost;u.cur=safe(u.cur)+1;
+  recalcAudience();updateTopBar();renderUpgrade();
+  showReward('🔧 UPGRADE!',[u.ico+' '+u.name+' → Lv'+u.cur,u.desc],u.ico);
+}
+
+// ════════════════════════════════════════════════
+// CASSE
+// ════════════════════════════════════════════════
+setInterval(()=>{if(!G.freeReady){G.freeTimer=safe(G.freeTimer)-1;if(G.freeTimer<=0)G.freeReady=true;if(document.getElementById('tp-casse').classList.contains('on'))renderCasse();}},1000);
+function renderCasse(){
+  const el=document.getElementById('casse-el');el.innerHTML='';
+  CASSE.forEach(c=>{
+    const isFree=c.daily;
+    const canOpen=isFree?G.freeReady:(safe(G.gems)>=safe(c.price));
+    const d=document.createElement('div');d.className='cassa'+(canOpen?'':' lk');d.style.borderColor=c.color;
+    d.innerHTML=`${isFree&&!G.freeReady?`<div class="c-timer">${fmtT(safe(G.freeTimer))}</div>`:''}
+      <div class="c-ico">${c.ico}</div>
+      <div class="c-nm" style="color:${c.color}">${c.name}</div>
+      <div style="font-size:8px;color:var(--mu);">${c.desc}</div>
+      <div class="c-pr" style="color:${c.color}">${isFree?(G.freeReady?'✅ GRATIS':fmtT(safe(G.freeTimer))):(safe(c.price)+'💎')}</div>`;
+    if(canOpen) d.onclick=()=>openCassa(c);
+    el.appendChild(d);
+  });
+  // Diamond shop
+  const ds=document.getElementById('diamond-shop');
+  ds.innerHTML=DIAMOND_PACKS.map((p,i)=>`
+    <div class="dpack" onclick="buyDiamonds(${i})">
+      <div class="dp-amt">${p.ico}<br>💎${p.gems}</div>
+      <div class="dp-price">${p.price}</div>
+      <div style="font-size:8px;color:var(--mu);margin-top:3px;">PayPal / Carta</div>
+    </div>`).join('');
+}
+function buyDiamonds(i){
+  const p=DIAMOND_PACKS[i];
+  showPop('💎','Acquista Gemme',`<b>${p.ico} ${p.gems} Gemme</b> — ${p.price}<br><br>In una versione pubblicata, questo aprirebbe il metodo di pagamento.<br>Per questa demo, le gemme sono aggiunte gratuitamente!`,
+    [{t:'✅ Aggiungi '+p.gems+' Gemme (Demo)',fn:()=>{G.gems=safe(G.gems)+p.gems;updateTopBar();renderCasse();showReward('💎 GEMME!',['💎 +'+p.gems+' Gemme','Buona fortuna!'],'💎');}},{t:'✕ Annulla',fn:()=>{}}]);
+}
+function openCassa(c){
+  if(c.daily){if(!G.freeReady)return;G.freeReady=false;G.freeTimer=86400;}
+  else{if(safe(G.gems)<safe(c.price))return;G.gems=safe(G.gems)-safe(c.price);}
+  G.openCassas=safe(G.openCassas)+1;
+  const loot=[];
+  if(c.vip){
+    // Guaranteed 5-star VIP
+    const vips=CHARS_POOL.filter(v=>v.vip&&!G.hired.has(v.id));
+    if(vips.length){
+      const v=vips[Math.floor(Math.random()*vips.length)];
+      loot.push('🌟 '+v.name+' (5⭐)');
+      G.hired.add(v.id);
+      G.staff.push({...v,lv:1,id:'s_'+v.id,origId:v.id,salary:Math.floor(safe(v.sal)*.5)});
+      sendMessage('Casting','Star assunta!',`${v.name} ha accettato di far parte del tuo network! Rating: 5⭐`,'success');
+    } else { loot.push('💫 Tutte le star già assunte!'); }
+  }
+  const base=Math.max(200,(safe(c.price)||1)*250);
+  const money=Math.floor(safe(base)*(1.2+Math.random()*1.8));
+  loot.push('+€'+fmtK(money));G.money=safe(G.money)+money;
+  if(c.id!=='free'&&Math.random()<.3){const g=Math.max(1,Math.ceil(safe(c.price)*.2));loot.push('+'+g+'💎');G.gems=safe(G.gems)+g;}
+  if(c.id==='legend'&&Math.random()<.35){triggerViral();loot.push('🔥 VIRALE!');}
+  // Daily: 1 gem
+  if(c.daily){loot.push('+1💎');G.gems=safe(G.gems)+1;}
+  const lg=document.getElementById('casse-log');
+  lg.innerHTML='<div>• '+c.name+': '+loot.join(' ')+'</div>'+lg.innerHTML;
+  updateTopBar();renderCasse();
+  showReward('🎁 '+c.name+'!',loot,c.ico);
+}
+
+// ════════════════════════════════════════════════
+// LEVELS
+// ════════════════════════════════════════════════
+function getObjPct(o){
+  let cur=0,max=safe(o.v,1);
+  if(o.g==='aud')    cur=safe(G.audience);
+  if(o.g==='earn')   cur=safe(G.earned);
+  if(o.g==='staff')  cur=(G.staff||[]).length;
+  if(o.g==='slots')  cur=(G.channels||[]).reduce((a,c)=>a+(c.schedule||[]).filter(it=>it.type!=='ad').length,0);
+  if(o.g==='films')  cur=G.ownedFilms.size;
+  if(o.g==='pub')    cur=(G.contracts||[]).filter(c=>c.active).length;
+  if(o.g==='upg')    cur=UPGRADES.filter(u=>safe(u.cur)>=1).length;
+  if(o.g==='upgmax') cur=UPGRADES.filter(u=>safe(u.cur)>=safe(o.v)).length, max=UPGRADES.length;
+  if(o.g==='prog'){
+    const has=(G.channels||[]).some(c=>(c.schedule||[]).some(it=>it.id===o.v));
+    cur=has?1:0; max=1;
+  }
+  if(o.g==='ch')    { cur=(G.channels||[]).filter(c=>c.unlocked).length; max=safe(o.v); }
+  const pct=Math.min(100,max>0?safe(cur)/safe(max)*100:0);
+  return {pct:safe(pct),done:pct>=100,cur,max};
+}
+function renderStudioObjs(){
+  const L=LEVELS[safe(G.level)-1];if(!L) return;
+  document.getElementById('studio-objs').innerHTML=L.o.map((o,i)=>{
+    const {pct,done}=getObjPct(o);
+    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:10px;">
+      <span style="color:${done?'var(--gr)':'var(--mu)'};">${done?'✅':'◯'}</span>
+      <span style="flex:1;">${o.t}</span>
+      <div class="pbar" style="width:50px;"><div class="pf pfg" style="width:${safe(pct)}%"></div></div>
+      <span style="font-size:8px;color:${done?'var(--gr)':'var(--mu)'};">${Math.floor(safe(pct))}%</span>
+    </div>`;
+  }).join('');
+}
+function renderLevelPane(){
+  const L=LEVELS[safe(G.level)-1];if(!L) return;
+  document.getElementById('big-lv').textContent=safe(G.level);
+  document.getElementById('big-lv-name').textContent=L.n;
+  document.getElementById('lv-xp').textContent=Math.floor(safe(G.xp));
+  document.getElementById('lv-xpmax').textContent=safe(G.xpNext);
+  document.getElementById('lv-xp-bar').style.width=(safe(G.xp)/safe(G.xpNext)*100)+'%';
+  document.getElementById('lv-objs').innerHTML=L.o.map((o,i)=>{
+    const {pct,done}=getObjPct(o);
+    return `<div class="lv-obj${done?' done':''}">
+      <div class="lv-num">${done?'✓':i+1}</div>
+      <div style="flex:1;font-size:10px;">${o.t}</div>
+      <div class="pbar" style="width:55px;"><div class="pf pfg" style="width:${safe(pct)}%"></div></div>
+      <span style="font-size:8px;color:${done?'var(--gr)':'var(--mu)'};">${Math.floor(safe(pct))}%</span>
+    </div>`;
+  }).join('');
+  document.getElementById('lv-rew').innerHTML=[
+    L.rew.m?`<div class="ri">💰 €${fmtK(L.rew.m)}</div>`:'',
+    L.rew.g?`<div class="ri">💎 ${L.rew.g}</div>`:'',
+    L.rew.ch?`<div class="ri">📺 Sblocca CH${L.rew.ch}</div>`:'',
+    `<div class="ri">⭐ ${L.xp} XP</div>`,
+  ].filter(Boolean).join('');
+}
+function tryAdvance(){
+  const L=LEVELS[safe(G.level)-1];if(!L){showPop('🏆','Hai completato TV Empire!','Sei il re della televisione italiana!','ok');return;}
+  const allDone=L.o.every(o=>getObjPct(o).done);
+  if(!allDone){showPop('⚠️','Obiettivi incompleti','Completa tutti gli obiettivi prima di avanzare.','ok');showTab('livello',null);return;}
+  G.xp=safe(G.xp)+L.xp;
+  while(G.xp>=G.xpNext){G.xp=safe(G.xp)-safe(G.xpNext);G.level=safe(G.level)+1;G.xpNext=Math.floor(safe(G.xpNext)*1.3);}
+  G.money=safe(G.money)+safe(L.rew.m||0);G.gems=safe(G.gems)+safe(L.rew.g||0);
+  // Unlock channels every 5 levels
+  const chToUnlock=Math.floor((safe(G.level)-1)/5);
+  for(let i=0;i<=Math.min(chToUnlock,4);i++) if(G.channels[i]) G.channels[i].unlocked=true;
+  recalcAudience();updateTopBar();updateLeftPanel();renderLevelPane();
+  sendMessage('Sistema','Livello '+G.level+' sbloccato!',`Hai completato il livello ${G.level-1}: "${L.n}". Continua così!`,'success');
+  showReward('🏆 LV '+safe(G.level)+'!',['+€'+fmtK(L.rew.m||0),L.rew.g?'+'+L.rew.g+'💎':'',L.rew.ch?'📺 Canale '+L.rew.ch+' sbloccato!':'','+'+L.xp+' XP'].filter(Boolean),'🏆');
+}
+
+// ════════════════════════════════════════════════
+// MESSAGES
+// ════════════════════════════════════════════════
+function sendMessage(from,subj,body,type='info'){
+  G.messages=G.messages||[];
+  G.messages.unshift({id:safe(G.msgSeq=safe(G.msgSeq)+1),day:safe(G.day),from,subj,body,type,read:false});
+  if(G.messages.length>50) G.messages=G.messages.slice(0,50);
+  updateTopBar();
+}
+function renderMessages(){
+  const el=document.getElementById('msg-list');
+  const msgs=G.messages||[];
+  if(!msgs.length){el.innerHTML='<div style="color:var(--mu);text-align:center;padding:20px;font-size:11px;">Nessun messaggio</div>';return;}
+  el.innerHTML=msgs.map((m,i)=>{
+    const ico={'info':'ℹ️','success':'✅','warning':'⚠️','error':'❌','proposal':'🤝'}[m.type]||'📬';
+    return `<div class="msg-item${m.read?'':' unread'}" onclick="openMsg(${i})">
+      <span class="msg-date">G${m.day}</span>
+      <div class="msg-from">${ico} ${m.from}</div>
+      <div class="msg-subj">${m.subj}</div>
+      <div class="msg-preview">${m.body}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('unread-cnt').textContent=msgs.filter(m=>!m.read).length+' non letti';
+}
+function openMsg(i){
+  const m=(G.messages||[])[i];if(!m) return;
+  m.read=true;
+  const ico={'info':'ℹ️','success':'✅','warning':'⚠️','proposal':'🤝'}[m.type]||'📬';
+  showPop(ico,m.subj,`<div style="text-align:left;font-size:11px;line-height:1.8;"><b>Da:</b> ${m.from} — Giorno ${m.day}<br><br>${m.body}</div>`,'ok');
+  renderMessages();updateTopBar();
+}
+function sendDailyMessages(){
+  // Daily news
+  const events=[
+    {s:'Notizia del giorno',b:`Gli ascolti del giorno ${G.day} si sono attestati su ${fmtK(G.audience)} spettatori. ${G.audience>5000?'Ottimo lavoro!':'Continua a migliorare il palinsesto.'}`},
+    {s:'Promemoria Stipendi',b:`Stai pagando €${fmtK((G.staff||[]).reduce((a,s)=>a+safe(s.salary),0))}/giorno per ${(G.staff||[]).length} dipendenti.`},
+  ];
+  const ev=events[Math.floor(Math.random()*events.length)];
+  sendMessage('Redazione',ev.s,ev.b,'info');
+  // Proposal every few days
+  if(safe(G.day)%3===0){
+    const pub=PUBS_DATA[Math.floor(Math.random()*PUBS_DATA.length)];
+    sendMessage(pub.name,'Proposta di contratto',`${pub.name} ci propone un contratto pubblicitario: ×${pub.mult} per ${pub.dur} giorni. Audience richiesta: ${fmtK(pub.minAud)}.`,'proposal');
+  }
+}
+function sendMonthlyReport(){
+  sendMessage('Ufficio Finanze','Rendiconto Mensile',
+    `Mese terminato!\n💰 Guadagno mensile: €${fmtK(safe(G.monthlyEarn))}\n👁 Audience media: ${fmtK(safe(G.audience))}\n👥 Staff: ${(G.staff||[]).length}\n📺 Canali attivi: ${(G.channels||[]).filter(c=>c.unlocked).length}`,'info');
+  G.monthlyEarn=0;
+}
+
+// ════════════════════════════════════════════════
+// LIVE / DAILY
+// ════════════════════════════════════════════════
+function toggleLive(){
+  if(!G.live){
+    const hasContent=(G.channels||[]).some(c=>c.unlocked&&(c.schedule||[]).length>0);
+    if(!hasContent){showPop('⚠️','Nessun Contenuto','Aggiungi almeno un programma al palinsesto prima di andare in onda!','ok');return;}
+    G.live=true;
+    document.getElementById('btn-live').textContent='⏹ STOP DIRETTA';
+    document.getElementById('btn-live').className='btn bgr bw';
+    document.getElementById('oab').style.display='block';
+    recalcAudience();startClock();
+  } else {
+    G.live=false;
+    document.getElementById('btn-live').textContent='🔴 AVVIA DIRETTA';
+    document.getElementById('btn-live').className='btn bg bw';
+    document.getElementById('oab').style.display='none';
+    if(clockTick){clearInterval(clockTick);clockTick=null;}
+  }
+}
+function collectDaily(){
+  if(G.dailyDone){showPop('⏳','Già riscosso!','Il bonus giornaliero è già stato riscosso oggi.','ok');return;}
+  G.dailyDone=true;
+  const r=300+safe(G.level)*80;G.money=safe(G.money)+r;updateTopBar();
+  showReward('☀️ BONUS GIORNALIERO!',['€'+fmtK(r),'Torna domani per un altro bonus!'],'🌅');
+}
+
+// ════════════════════════════════════════════════
+// EVENTS
+// ════════════════════════════════════════════════
+const TRENDS=['Gossip','Sport','Politica','Cucina','Tecnologia','Musica','Cinema','Reality','Notizie','Cultura'];
+function changeTrend(){G.trend=TRENDS[Math.floor(Math.random()*TRENDS.length)];G.trendMult=safe(0.85+Math.random()*.55);}
+function triggerViral(){
+  document.getElementById('viral').classList.add('on');
+  setTimeout(()=>document.getElementById('viral').classList.remove('on'),2700);
+  G.audience=Math.floor(safe(G.audience)*1.45);G.rating=Math.min(100,safe(G.rating)+12);
+  sendMessage('Social Media','Contenuto Virale!',`Uno dei tuoi programmi è diventato virale! Audience: ${fmtK(G.audience)}`,'success');
+}
+const RAND_EVENTS=[
+  {ico:'📢',t:'CONTENUTO VIRALE!',b:'Il tuo programma è esploso sui social!',ch:[
+    {l:'🎉 Capitalizza (+50% aud)',f:()=>{triggerViral();}},{l:'Continua normalmente',f:()=>{}},
+  ]},
+  {ico:'⚡',t:'GUASTO TECNICO',b:'Trasmissione interrotta!',ch:[
+    {l:'🔧 Ripara (€1.000)',f:()=>{if(safe(G.money)>=1000)G.money=safe(G.money)-1000;else G.audience=Math.max(0,safe(G.audience)-500);}},
+    {l:'Aspetta (−500 aud)',f:()=>{G.audience=Math.max(0,safe(G.audience)-500);}},
+  ]},
+  {ico:'🎤',t:'STAR OSPITE',b:'Una celebrity vuole partecipare!',ch:[
+    {l:'✅ Invita (€3.000 +2.000 aud)',f:()=>{if(safe(G.money)>=3000){G.money=safe(G.money)-3000;G.audience=safe(G.audience)+2000;G.rating=Math.min(100,safe(G.rating)+15);}}},
+    {l:'Rifiuta',f:()=>{}},
+  ]},
+  {ico:'📰',t:'SCANDALO!',b:'Uno dei tuoi presentatori è al centro di uno scandalo.',ch:[
+    {l:'🤫 Copri (€5.000)',f:()=>{if(safe(G.money)>=5000)G.money=safe(G.money)-5000;}},
+    {l:'📢 Sfrutta (+aud −rating)',f:()=>{G.audience=safe(G.audience)+1000;G.rating=Math.max(0,safe(G.rating)-20);}},
+    {l:'Ignora (−aud)',f:()=>{G.audience=Math.max(0,safe(G.audience)-600);}},
+  ]},
+];
+function randomEvent(){
+  const ev=RAND_EVENTS[Math.floor(Math.random()*RAND_EVENTS.length)];
+  showPop(ev.ico,ev.t,ev.b,ev.ch.map(c=>({t:c.l,fn:()=>{c.f();updateTopBar();}})));
+}
+
+// ════════════════════════════════════════════════
+// SPEED
+// ════════════════════════════════════════════════
+function setSpd(n){
+  if(n===5&&!G.speed5){
+    showPop('💎','Sblocca Velocità 5x','Sblocca la velocità 5x per 10 gemme?',
+      [{t:'💎 Sblocca con 10 Gemme',fn:()=>{if(safe(G.gems)<10){showPop('⚠️','Gemme insufficienti!','Servono 10 💎','ok');return;}G.gems=safe(G.gems)-10;G.speed5=true;setSpd(5);updateTopBar();}},{t:'✕ Annulla',fn:()=>{}}]);
+    return;
+  }
+  G.speed=n;
+  ['1','2','5'].forEach(s=>{const el=document.getElementById('sp'+s);if(el)el.classList.toggle('on',s==n);});
+  if(clockTick&&G.live){clearInterval(clockTick);startClock();}
+}
+
+// ════════════════════════════════════════════════
+// POPUP / REWARD HELPERS
+// ════════════════════════════════════════════════
+function showPop(ico,title,body,btns){
+  document.getElementById('p-ico').textContent=ico||'';
+  document.getElementById('p-title').textContent=title||'';
+  document.getElementById('p-body').innerHTML=typeof body==='string'?body:'';
+  const bc=document.getElementById('p-btns');bc.innerHTML='';
+  if(btns==='ok'){
+    const b=document.createElement('button');b.className='btn bg bw';b.textContent='OK';b.onclick=closePop;bc.appendChild(b);
+  } else if(typeof btns==='string'&&btns==='cancel'){
+    const b=document.createElement('button');b.className='btn br bw';b.textContent='✕ CHIUDI';b.onclick=closePop;bc.appendChild(b);
+  } else if(Array.isArray(btns)){
+    btns.forEach(({t,fn})=>{
+      const b=document.createElement('button');b.className='p-ch';b.innerHTML=t;
+      b.onclick=()=>{closePop();if(fn)fn();};bc.appendChild(b);
+    });
+  }
+  document.getElementById('pop').classList.add('on');
+}
+function showPopEl(ico,title,elBody,btns){
+  document.getElementById('p-ico').textContent=ico||'';
+  document.getElementById('p-title').textContent=title||'';
+  const pb=document.getElementById('p-body');pb.innerHTML='';pb.appendChild(elBody);
+  const bc=document.getElementById('p-btns');bc.innerHTML='';
+  (btns||[]).forEach(({t,fn})=>{
+    const b=document.createElement('button');b.className='p-ch';b.innerHTML=t;
+    b.onclick=()=>{closePop();if(fn)fn();};bc.appendChild(b);
+  });
+  document.getElementById('pop').classList.add('on');
+}
+function closePop(){document.getElementById('pop').classList.remove('on');}
+function showReward(title,items,ico){
+  document.getElementById('rtitle').textContent=title;
+  document.getElementById('rico').textContent=ico||'🎁';
+  document.getElementById('ritems').innerHTML=(items||[]).filter(Boolean).map(i=>`<div class="ri">${i}</div>`).join('');
+  document.getElementById('rew').classList.add('on');
+}
+function showProgDetail(id){
+  const prog=getProgItem(id)||PROGRAMS.find(p=>p.name===id)||ALL_FILMS.find(f=>f.title===id);
+  if(!prog) return;
+  const now=safe(G.hour)*60+safe(G.minute);
+  let chLine='';
+  (G.channels||[]).forEach(ch=>{
+    const item=(ch.schedule||[]).find(it=>it.id===(prog.id));
+    if(item&&safe(item.startMin)<=now&&safe(item.endMin)>now){
+      const st=item.staffId?G.staff.find(s=>s.id===item.staffId):null;
+      chLine+=`<div>${ch.name}: 👁 ${fmtK(safe(ch.audience))} spett.${st?' — '+st.name:''}</div>`;
+    }
+  });
+  showPop(prog.ico||'🎬',prog.name||prog.title,
+    `<div style="text-align:left;font-size:11px;line-height:2;">
+      <div>Durata: ${prog.dur||prog.duration||60}min</div>
+      <div>Rating: ${prog.rating||prog.r||'–'} ${starsStr((safe(prog.rating||prog.r))/20)}</div>
+      ${prog.type?`<div>Tipo: ${prog.type}</div>`:''}
+      ${chLine||'<div style="color:var(--mu)">Non in onda ora</div>'}
+    </div>`,'ok');
+}
+
+// ════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════
+function fmtK(n){const v=safe(n);if(v>=1e6)return(v/1e6).toFixed(1)+'M';if(v>=1000)return(v/1000).toFixed(1)+'K';return Math.floor(v);}
+function fmtT(s){const v=safe(s);const h=Math.floor(v/3600),m=Math.floor((v%3600)/60);return(h?h+'h ':'')+m+'m';}
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+function startGame(){
+  document.getElementById('s-menu').classList.remove('on');
+  document.getElementById('s-game').classList.add('on');
+  if(!loadGame()){
+    G=defaultState();
+    // Starter schedule
+    getCh().schedule.push({type:'prog',id:'tg',staffId:null});
+    getCh().schedule.push({type:'prog',id:'meteo',staffId:null});
+    rebuildTimes(getCh());
+    sendMessage('Benvenuto!','Inizia la tua avventura TV','Benvenuto in TV Empire! Vai su PALINSESTO per aggiungere programmi, poi premi AVVIA DIRETTA per iniziare a guadagnare. Buona fortuna!','info');
+    sendMessage('Suggerimento','Come guadagnare subito','1. Aggiungi programmi al palinsesto\n2. Firma contratti pubblicitari\n3. Assumi staff per aumentare gli ascolti\n4. Fai upgrades allo studio','info');
+  }
+  refreshDailyFilms();
+  changeTrend();
+  recalcAudience();
+  resizeTV();
+  updateTopBar();updateLeftPanel();
+  renderPal();renderCasse();renderUpgrade();
+  renderLevelPane();renderStudioObjs();
+  setInterval(()=>{recalcAudience();updateTopBar();updateLeftPanel();},4000);
+  setInterval(()=>{if(Math.random()<.3)changeTrend();},28000);
+}
+function goMenu(){if(G.live)toggleLive();saveGame();document.getElementById('s-game').classList.remove('on');document.getElementById('s-menu').classList.add('on');}
+function openInfo(){showPop('ℹ️','TV EMPIRE 3D v5','<div style="text-align:left;line-height:2;font-size:11px;">📺 Gestisci la tua rete TV<br>💰 Guadagna audience e soldi<br>📅 Organizza il palinsesto 24h<br>👥 Assumi star con 5 stelle<br>📡 Sblocca 5 canali (ogni 5 livelli)<br>🎬 30 film in rotazione giornaliera<br>💾 Salvataggio automatico ogni 2min<br><br><b style="color:var(--gold)">Versione 5.0</b></div>','ok');}
+
+window.onload=function(){
+  resizeTV(); tvLoop();
+  window.addEventListener('resize',()=>{if(document.getElementById('s-game').classList.contains('on'))resizeTV();});
+};
+</script>
+</body>
+</html>
